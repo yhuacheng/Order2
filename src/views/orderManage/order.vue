@@ -4,7 +4,7 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="searchForm" size="small">
 				<el-form-item label="搜索内容">
-					<el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="订单号/产品名称/ASIN/客户编码" style="width: 220px;"></el-input>
+					<el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="订单号/产品名称/ASIN/关键词" style="width: 220px;"></el-input>
 				</el-form-item>
 				<el-form-item label="国家">
 					<el-select v-model="searchForm.country" placeholder="请选择国家" style="width: 120px;">
