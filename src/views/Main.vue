@@ -76,7 +76,7 @@
 <script>
 	import {
 		taskSum,
-		balance,
+		userInfo,
 		notice,
 		rateList,
 		feeList,
@@ -127,7 +127,7 @@
 				let params = {
 					Id: sessionStorage.getItem('userId')
 				}
-				balance(params).then(res => {
+				userInfo(params).then(res => {
 					_this.balance = res[0].accountbalance
 				}).catch((e) => {})
 			},

@@ -460,8 +460,8 @@
 		addOrder,
 		orderState,
 		payMent,
-		balance
-	} from '@/api/api';
+		userInfo
+	} from '@/api/api'
 	export default {
 		name: 'order',
 		data() {
@@ -916,7 +916,7 @@
 				let params = {
 					Id: sessionStorage.getItem('userId')
 				}
-				balance(params).then(res => {
+				userInfo(params).then(res => {
 					_this.balance = res[0].accountbalance
 				}).catch((e) => {})
 			},
@@ -985,7 +985,6 @@
 				let _this = this
 				_this.title = '订单【' + row.OrderNumber + '】详情'
 				_this.viewOrderData = Object.assign({}, row)
-				_this.viewOrderData.ProductPictures = this.$IMG_URL + row.ProductPictures
 				_this.viewModal = true //获取到数据后显示模态框
 			},
 

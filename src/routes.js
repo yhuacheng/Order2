@@ -29,6 +29,18 @@ export default new Router({
 			hidden: true
 		},
 		{
+			path: '/',
+			component: () => import('./views/Home.vue'),
+			name: '个人资料',
+			hidden: true,
+			children: [{
+				path: '/userInfo',
+				component: () => import('./views/UserInfo.vue'),
+				name: '基本信息',
+				hidden: true
+			}]
+		},
+		{
 			path: '/404',
 			component: () => import('./views/404.vue'),
 			name: '',
@@ -49,13 +61,23 @@ export default new Router({
 			path: '/',
 			component: () => import('./views/Home.vue'),
 			name: '订单管理',
-			iconCls: 'el-icon-search',
+			iconCls: 'el-icon-document-checked',
 			children: [{
-					path: '/order',
-					component: () => import('./views/orderManage/order.vue'),
-					name: '订单列表'
-				}
-			]
+				path: '/order',
+				component: () => import('./views/orderManage/order.vue'),
+				name: '订单列表'
+			}]
+		},
+		{
+			path: '/',
+			component: () => import('./views/Home.vue'),
+			name: '任务管理',
+			iconCls: 'el-icon-document',
+			children: [{
+				path: '/task',
+				component: () => import('./views/taskManage/task.vue'),
+				name: '任务列表'
+			}]
 		},
 		{
 			path: '/',

@@ -1,5 +1,9 @@
 $color-primary: #20a0ff; //#18c79c
 
+$color-header: #242f42; //头部背景色
+$color-aside: #324157; //左侧菜单背景色
+
+
 .danger{
 	color: #F56C6C;
 }
@@ -104,7 +108,7 @@ body {
 }
 
 .toolbar {
-	background: #f2f2f2;
+	background: #eef1f6;
 	padding: 10px;
 	margin: 10px 0px;
 }
@@ -163,7 +167,7 @@ body {
     .header {
       height: 60px;
       line-height: 60px;
-      background: $color-primary;
+      background: $color-header;
       color: #fff;
 
       .userinfo {
@@ -189,7 +193,7 @@ body {
 
       .logo {
         height: 60px;
-        font-size: 20px;
+        font-size: 18px;
 				font-weight: bold;
 				font-style: oblique;
 				letter-spacing:3px;
@@ -212,7 +216,7 @@ body {
 
       .logo-width {
         width: 230px;
-				padding: 0 20px;
+				padding: 0 22px;
       }
 
       .logo-collapse-width {
@@ -237,49 +241,68 @@ body {
       overflow: hidden;
 
       aside {
-        flex: 0 0 230px;
-        width: 230px;
-        .el-menu {
-          height: 100%;
-        }
-
-        .collapsed {
-          width: 60px;
-
-          .item {
-            position: relative;
-          }
-
-          .submenu {
-            position: absolute;
-            top: 0;
-            left: 60px;
-            z-index: 99999;
-            height: auto;
-            display: none;
-						background: #CCCCCC;
-          }
-
-        }
+      	flex: 0 0 230px;
+      	width: 230px;
+      	.el-menu {
+      		height: 100%;
+      		background: $color-aside;
+      	}
+      	
+      	.el-submenu__title,
+      	.el-menu-item{
+      		color: #BFCBD9;
+      	}
+      	
+      	.el-submenu__title:hover,
+      	.el-menu-item:hover{
+      		background: #242f42;
+      	}
+      	
+      	.el-menu-item:focus{
+      		background: none;
+      	}
+      	
+      	.el-menu-item.is-active {
+      			color: #409EFF !important;
+      	}
+      
+      	.collapsed {
+      		width: 60px;
+      
+      		.item {
+      			position: relative;
+      		}
+      
+      		.submenu {
+      			position: absolute;
+      			top: 0;
+      			left: 60px;
+      			z-index: 99999;
+      			height: auto;
+      			display: none;
+      			background: #475669;
+      		}
+      
+      	}
       }
-
+      
       .menu-collapsed {
-        flex: 0 0 60px;
-        width: 60px;
+      	flex: 0 0 60px;
+      	width: 60px;
       }
-
+      
       .menu-expanded {
-        flex: 0 0 230px;
-        width: 230px;
-
-        .el-menu { /*打补丁的方式解决左侧菜单宽度显示不全*/
-          width: 100% !important;
-        }
-
-        .el-submenu .el-menu-item {
-          min-width: 0px !important;
-					margin-left: 10px;
-        }
+      	flex: 0 0 230px;
+      	width: 230px;
+      
+      	.el-menu {
+      		width: 100% !important;
+      	}
+      
+      	.el-submenu .el-menu-item {
+      		min-width: 0px !important;
+      		margin-left: 10px;
+      	}
       }
 
       .content-container {

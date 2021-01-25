@@ -3,11 +3,12 @@
 		<el-row class="home-container">
 			<el-col :span="24" class="header">
 				<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-					<span @click="$router.push('/index')" style="cursor: pointer;"><i class="el-icon-s-opportunity"></i> {{collapsed?'':sysName}}</span>
+					<span @click="$router.push('/main')" style="cursor: pointer;">
+						<i class="el-icon-price-tag"></i> {{collapsed?'':sysName}}</span>
 				</el-col>
 				<el-col :span="10">
 					<div class="tools" @click.prevent="collapse">
-						<i class="el-icon-files"></i>
+						<i :class="collapsed?'el-icon-notebook-2':'el-icon-tickets'"></i>
 					</div>
 				</el-col>
 				<el-col :span="4" class="userinfo">
@@ -17,7 +18,8 @@
 							<span class="username">{{sysUserName}}</span>
 						</span>
 						<el-dropdown-menu slot="dropdown">
-							<el-dropdown-item @click.native="editModal=true">修改密码</el-dropdown-item>
+							<el-dropdown-item @click.native="$router.push('/userInfo')">基本信息</el-dropdown-item>
+							<el-dropdown-item divided @click.native="editModal=true">修改密码</el-dropdown-item>
 							<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
 						</el-dropdown-menu>
 					</el-dropdown>
