@@ -94,7 +94,7 @@
 	.head-box {
 		height: 68px;
 		line-height: 68px;
-		background-color: #0D6DFF;
+		background-color: #316cc7;
 		width: 80%;
 		padding: 0 10%;
 	}
