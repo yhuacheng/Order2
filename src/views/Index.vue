@@ -94,7 +94,7 @@
 	.head-box {
 		height: 68px;
 		line-height: 68px;
-		background-color: #316cc7;
+		background-color: #0571FF;
 		width: 80%;
 		padding: 0 10%;
 	}
@@ -157,8 +157,8 @@
 	.content3 .con-box {
 		margin-top: 50px;
 	}
-	
-	.content3 .btn{
+
+	.content3 .btn {
 		margin-top: 80px;
 	}
 

@@ -2,19 +2,26 @@
 	<div>
 		<el-row class="home-container">
 			<el-col :span="24" class="header">
-				<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-					<span @click="$router.push('/main')" style="cursor: pointer;">
-						<i class="el-icon-price-tag"></i> {{collapsed?'':sysName}}</span>
+				<el-col :span="4" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
+					<span @click="$router.push('main')" style="cursor: pointer;">
+						<i class="el-icon-price-tag"></i>
+						<span>{{collapsed?'':sysName}}</span>
+					</span>
 				</el-col>
-				<el-col :span="10">
-					<div class="tools" @click.prevent="collapse">
+				<el-col :span="4">
+					<span class="tools" @click.prevent="collapse">
 						<i :class="collapsed?'el-icon-notebook-2':'el-icon-tickets'"></i>
-					</div>
+					</span>
 				</el-col>
-				<el-col :span="4" class="userinfo">
+				<el-col :span="16" class="userinfo">
+					<span style="margin-right: 30px;">
+						<span class="ml10">{{nowDate}}</span>
+						<span class="ml10">{{nowTime}}</span>
+						<span class="ml10">{{nowWeek}}</span>
+					</span>
 					<el-dropdown trigger="hover">
 						<span class="el-dropdown-link userinfo-inner">
-							<span class="icon"><i class="el-icon-user-solid"></i></span>
+							<el-avatar class="icon" icon="el-icon-user-solid" :size="23"></el-avatar>
 							<span class="username">{{sysUserName}}</span>
 						</span>
 						<el-dropdown-menu slot="dropdown">
@@ -44,7 +51,7 @@
 					<ul class="el-menu el-menu-vertical-demo collapsed" v-show="collapsed" ref="menuCollapsed">
 						<li v-for="(item,index) in routes" :key="item.name" class="el-submenu item">
 							<!--非单节点route渲染-->
-							<template v-if="!item.leaf">
+							<div v-if="!item.leaf">
 								<!--经过菜单显示对应ul的事件-->
 								<div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)"><i
 									 :class="item.iconCls"></i></div>
@@ -53,58 +60,58 @@
 									 @click="$router.push(child.path)">{{child.name}}
 									</li>
 								</ul>
-							</template>
-							<template v-else>
+							</div>
+							<div v-else>
 						<li class="el-submenu">
 							<div class="el-submenu__title el-menu-item" style="height: 56px;line-height: 56px;padding: 0 20px;" :class="$route.path===item.children[0].path?'is-active':''"
 							 @click="$router.push(item.children[0].path)"><i :class="item.iconCls"></i>
 							</div>
 						</li>
-</template>
-</li>
-</ul>
-</aside>
-
-<section class="content-container">
-	<div class="grid-content bg-purple-light">
-		<el-col :span="24" class="breadcrumb-container">
-			<strong class="title">{{$route.name}}</strong>
-			<el-breadcrumb separator="/" class="breadcrumb-inner">
-				<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
-					{{ item.name }}
-				</el-breadcrumb-item>
-			</el-breadcrumb>
-		</el-col>
-		<el-col :span="24" class="content-wrapper">
-			<transition name="fade" mode="out-in">
-				<router-view></router-view>
-			</transition>
-		</el-col>
 	</div>
-</section>
-</el-col>
-</el-row>
+	</li>
+	</ul>
+	</aside>
 
-<!--修改密码-->
-<el-dialog title="修改密码" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="30%">
-	<el-form :model="editForm" label-width="100px" :rules="rules" ref="editForm">
-		<el-form-item label="原密码" prop="passwordOld">
-			<el-input v-model="editForm.passwordOld"></el-input>
-		</el-form-item>
-		<el-form-item label="新密码" prop="passwordNew">
-			<el-input v-model="editForm.passwordNew"></el-input>
-		</el-form-item>
-		<el-form-item label="确认新密码" prop="passwordAgain">
-			<el-input v-model="editForm.passwordAgain"></el-input>
-		</el-form-item>
-	</el-form>
-	<div slot="footer" class="dialog-footer">
-		<el-button @click="closeModal">取消</el-button>
-		<el-button type="primary" @click="editPassWord" :loading="btnLoading">提交</el-button>
+	<section class="content-container">
+		<div class="grid-content bg-purple-light">
+			<el-col :span="24" class="breadcrumb-container">
+				<strong class="title">{{$route.name}}</strong>
+				<el-breadcrumb separator="/" class="breadcrumb-inner">
+					<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
+						{{ item.name }}
+					</el-breadcrumb-item>
+				</el-breadcrumb>
+			</el-col>
+			<el-col :span="24" class="content-wrapper">
+				<transition name="fade" mode="out-in">
+					<router-view></router-view>
+				</transition>
+			</el-col>
+		</div>
+	</section>
+	</el-col>
+	</el-row>
+
+	<!--修改密码-->
+	<el-dialog title="修改密码" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="30%">
+		<el-form :model="editForm" label-width="100px" :rules="rules" ref="editForm">
+			<el-form-item label="原密码" prop="passwordOld">
+				<el-input v-model="editForm.passwordOld"></el-input>
+			</el-form-item>
+			<el-form-item label="新密码" prop="passwordNew">
+				<el-input v-model="editForm.passwordNew"></el-input>
+			</el-form-item>
+			<el-form-item label="确认新密码" prop="passwordAgain">
+				<el-input v-model="editForm.passwordAgain"></el-input>
+			</el-form-item>
+		</el-form>
+		<div slot="footer" class="dialog-footer">
+			<el-button @click="closeModal">取消</el-button>
+			<el-button type="primary" @click="editPassWord" :loading="btnLoading">提交</el-button>
+		</div>
+	</el-dialog>
+
 	</div>
-</el-dialog>
-
-</div>
 </template>
 
 <script>
@@ -128,7 +135,10 @@
 			return {
 				sysName: 'Amz-Buy',
 				collapsed: false,
-				sysUserName: '',
+				sysUserName: sessionStorage.getItem('userName'),
+				nowDate: '',
+				nowTime: '',
+				nowWeek: '',
 				editModal: false,
 				editForm: {
 					passwordOld: '',
@@ -182,6 +192,11 @@
 				}
 			}
 		},
+
+		created() {
+			this.nowTimes()
+		},
+
 		methods: {
 			// 退出登录
 			logout: function() {
@@ -235,14 +250,33 @@
 			},
 			showMenu(i, status) {
 				this.$refs.menuCollapsed.getElementsByClassName('submenu-hook-' + i)[0].style.display = status ? 'block' : 'none'
-			}
-		},
+			},
 
-		mounted() {
-			let userName = sessionStorage.getItem('userName')
-			if (userName) {
-				this.sysUserName = userName || ''
+			//获取年月日时分秒星期
+			timeFormate(timeStamp) {
+				let year = new Date(timeStamp).getFullYear()
+				let month = new Date(timeStamp).getMonth() + 1 < 10 ? "0" + (new Date(timeStamp).getMonth() + 1) : new Date(
+					timeStamp).getMonth() + 1
+				let date = new Date(timeStamp).getDate() < 10 ? "0" + new Date(timeStamp).getDate() : new Date(timeStamp).getDate()
+				let hh = new Date(timeStamp).getHours() < 10 ? "0" + new Date(timeStamp).getHours() : new Date(timeStamp).getHours()
+				let mm = new Date(timeStamp).getMinutes() < 10 ? "0" + new Date(timeStamp).getMinutes() : new Date(timeStamp).getMinutes()
+				let ss = new Date(timeStamp).getSeconds() < 10 ? "0" + new Date(timeStamp).getSeconds() : new Date(timeStamp).getSeconds()
+				let week = new Date(timeStamp).getDay()
+				let weeks = ["日", "一", "二", "三", "四", "五", "六"]
+				this.nowDate = year + "年" + month + "月" + date + "日"
+				this.nowTime = hh + ":" + mm + ':' + ss
+				this.nowWeek = "星期" + weeks[week]
+			},
+			nowTimes() {
+				this.timeFormate(new Date())
+				setInterval(this.nowTimes, 1000)
+				this.clear()
+			},
+			clear() {
+				clearInterval(this.nowTimes)
+				this.nowTimes = null
 			}
+
 		}
 	}
 </script>
