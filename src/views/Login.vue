@@ -3,10 +3,12 @@
 		<el-form v-show="doType==='login'" :model="loginForm" :rules="rules" ref="loginForm" class="login-container">
 			<h3 class="title">系统登录</h3>
 			<el-form-item prop="account">
-				<el-input type="text" v-model="loginForm.account" auto-complete="off" placeholder="手机号"></el-input>
+				<el-input type="text" v-model="loginForm.account" auto-complete="off" prefix-icon="el-icon-user"
+					placeholder="手机号"></el-input>
 			</el-form-item>
 			<el-form-item prop="password">
-				<el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="密码"></el-input>
+				<el-input type="password" v-model="loginForm.password" auto-complete="off" prefix-icon="el-icon-lock"
+					placeholder="密码"></el-input>
 			</el-form-item>
 			<el-form-item>
 				<el-button class="login-btn" type="primary" @click="loginIn" :loading="btnLoading">登录</el-button>
@@ -29,8 +31,10 @@
 				<el-input type="text" v-model="regForm.account" auto-complete="off" placeholder="手机号"></el-input>
 			</el-form-item>
 			<el-form-item prop="phoneCode">
-				<el-input type="text" v-model="regForm.phoneCode" auto-complete="off" placeholder="验证码" style="width: 200px;"></el-input>
-				<el-button type="primary" :disabled="disabledClick" @click="handlePhoneCode" style="float: right">{{btnTxt}}</el-button>
+				<el-input type="text" v-model="regForm.phoneCode" auto-complete="off" placeholder="验证码"
+					style="width: 200px;"></el-input>
+				<el-button type="primary" :disabled="disabledClick" @click="handlePhoneCode" style="float: right">
+					{{btnTxt}}</el-button>
 			</el-form-item>
 			<el-form-item prop="password">
 				<el-input type="password" v-model="regForm.password" auto-complete="off" placeholder="密码"></el-input>
@@ -55,8 +59,10 @@
 				<el-input type="text" v-model="findForm.account" auto-complete="off" placeholder="手机号"></el-input>
 			</el-form-item>
 			<el-form-item prop="phoneCode">
-				<el-input type="text" v-model="findForm.phoneCode" auto-complete="off" placeholder="验证码" style="width: 200px;"></el-input>
-				<el-button type="primary" :disabled="disabledClick" @click="handlePhoneCode" style="float: right">{{btnTxt}}</el-button>
+				<el-input type="text" v-model="findForm.phoneCode" auto-complete="off" placeholder="验证码"
+					style="width: 200px;"></el-input>
+				<el-button type="primary" :disabled="disabledClick" @click="handlePhoneCode" style="float: right">
+					{{btnTxt}}</el-button>
 			</el-form-item>
 			<el-form-item prop="password">
 				<el-input type="password" v-model="findForm.password" auto-complete="off" placeholder="新密码"></el-input>
