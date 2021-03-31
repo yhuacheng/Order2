@@ -1,38 +1,59 @@
 <template>
 	<section class="main-box">
 		<el-card>
-			<div class="card-box1">
-				<div class="item">
-					<p>总任务</p>
-					<div class="primary">{{all}}</div>
-				</div>
-				<div class="item">
-					<p>进行中</p>
-					<div class="warning">{{doing}}</div>
-				</div>
-				<div class="item">
-					<p>已完成</p>
-					<div class="success">{{complete}}</div>
-				</div>
-				<div class="item">
-					<p>已取消</p>
-					<div class="danger">{{cancel}}</div>
-				</div>
-				<div class="item">
-					<p>余额</p>
-					<div class="success">{{balance}}</div>
-				</div>
-				<div class="item btn-item">
-					<el-button plain type="danger" size="mini" @click="$router.push('/takeMoney')">提现</el-button>
-				</div>
-				<div class="item btn-item">
-					<el-button plain type="primary" size="mini" @click="$router.push('/moneyDetails')">账单</el-button>
-				</div>
+			<div class="card-box">
+				<el-row class="card-box">
+					<el-col :span="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<p>总任务</p>
+							<div class="num primary">{{all}}</div>
+						</el-card>
+					</el-col>
+					<el-col :md="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<p>进行中</p>
+							<div class="num warning">{{doing}}</div>
+						</el-card>
+					</el-col>
+					<el-col :md="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<p>已完成</p>
+							<div class="num success">{{complete}}</div>
+						</el-card>
+					</el-col>
+					<el-col :md="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<p>已取消</p>
+							<div class="num danger">{{cancel}}</div>
+						</el-card>
+					</el-col>
+					<el-col :md="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<p>余额</p>
+							<div class="num success">{{balance}}</div>
+						</el-card>
+					</el-col>
+					<el-col :md="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<el-button class="btn" plain type="primary" size="mini" @click="$router.push('/order')">下单</el-button>
+						</el-card>
+					</el-col>
+					<el-col :md="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<el-button class="btn" plain type="danger" size="mini" @click="$router.push('/takeMoney')">提现</el-button>
+						</el-card>
+					</el-col>
+					<el-col :md="3" :xs="12">
+						<el-card shadow="hover" class="item">
+							<el-button class="btn" plain type="warning" size="mini" @click="$router.push('/moneyDetails')">账单</el-button>
+						</el-card>
+					</el-col>
+				</el-row>
 			</div>
 		</el-card>
 
 		<el-row :gutter="30">
-			<el-col :span="18">
+			<el-col :md="18">
 				<el-card class="mt30">
 					<div slot="header">
 						<span>公告</span>
@@ -40,7 +61,7 @@
 					<div v-html="notice"></div>
 				</el-card>
 			</el-col>
-			<el-col :span="6">
+			<el-col :md="6">
 				<el-card class="mt30">
 					<div slot="header">
 						<span>汇率 / 服务费 / 增值费 公示</span>

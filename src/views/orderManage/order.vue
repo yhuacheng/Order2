@@ -14,7 +14,7 @@
 				</el-form-item>
 				<el-form-item label="下单时间">
 					<el-date-picker v-model="searchForm.time" :unlink-panels='true' type="datetimerange" range-separator="至"
-					 start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					 start-placeholder="开始时间" end-placeholder="结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
 					<el-button @click="searchData">查询</el-button>

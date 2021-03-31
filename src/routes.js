@@ -49,7 +49,7 @@ export default new Router({
 		{
 			path: '/',
 			component: () => import('./views/Home.vue'),
-			name: '首页面板',
+			name: '系统首页',
 			iconCls: 'el-icon-monitor',
 			children: [{
 				path: '/main',

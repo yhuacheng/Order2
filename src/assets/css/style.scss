@@ -441,47 +441,24 @@ body {
 	padding: 30px 0;
 }
 
-.card-box1 {
-	display: flex;
-	justify-content: space-between;
-	padding: 20px;
+.card-box{
+	padding: 5px 0;
 }
 
-.card-box1 .item {
+.card-box .item {
 	width: 120px;
 	height: 120px;
-	background: #F1F1F1;
+	margin: 0 auto;
+	background: #F5F5F5;
 	border-radius: 50%;
 	text-align: center;
 	color: #666666;
-	p{
-		margin-top: 22px;
+	.num{
+		font-size: 18px;
 	}
-	div{
-		font-size: 20px;
+	.btn{
+		margin-top: 25px;
 	}
-}
-
-.card-box1 .btn-item {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.card-box2 {
-	width: 48%;
-	margin-top: 30px;
-	float: left;
-}
-
-.card-box3 {
-	width: 48%;
-	margin-top: 30px;
-	float: right;
-}
-
-.card-box3 .el-collapse {
-	border-top: none;
 }
 
 /* 单图片上传相关样式 */

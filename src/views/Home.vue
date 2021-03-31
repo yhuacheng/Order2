@@ -133,7 +133,7 @@
 			}
 
 			return {
-				sysName: 'Amz-Buy',
+				sysName: 'AMZBUY',
 				collapsed: false,
 				sysUserName: sessionStorage.getItem('userName'),
 				nowDate: '',
@@ -201,7 +201,7 @@
 			// 退出登录
 			logout: function() {
 				let _this = this
-				_this.$confirm('确认退出吗?', '提示', {
+				_this.$confirm('确定退出系统吗?', '信息提示', {
 					type: 'warning'
 				}).then(() => {
 					sessionStorage.removeItem('user')
