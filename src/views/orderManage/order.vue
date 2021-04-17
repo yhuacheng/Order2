@@ -4,17 +4,19 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="searchForm" size="small">
 				<el-form-item label="搜索内容">
-					<el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="订单号/产品名称/ASIN/关键词" style="width: 220px;"></el-input>
+					<el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords"
+						placeholder="订单编号/产品名称/ASIN/关键词" style="width: 232px;"></el-input>
 				</el-form-item>
 				<el-form-item label="国家">
-					<el-select v-model="searchForm.country" placeholder="请选择国家" style="width: 120px;">
-						<el-option :value="0" label="全部"></el-option>
-						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
+					<el-select v-model="searchForm.country" multiple placeholder="请选择国家">
+						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName"
+							:value="item.Id"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="下单时间">
-					<el-date-picker v-model="searchForm.time" :unlink-panels='true' type="datetimerange" range-separator="至"
-					 start-placeholder="开始时间" end-placeholder="结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					<el-date-picker v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
+						range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"
+						value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
 					<el-button @click="searchData">查询</el-button>
@@ -26,37 +28,53 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="primary" size="small" @click="createOrder"><i class="el-icon-edit-outline"></i> 创建订单</el-button>
+			<el-button type="primary" size="small" @click="createOrder"><i class="el-icon-edit-outline"></i> 创建订单
+			</el-button>
 			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出订单</el-button>
 			<div class="tagMenu">
 				<el-badge :value="all" type="success" class="item">
-					<el-button size="small" @click='searchStateData(0)' :class="{'active':searchForm.state==''}">全部</el-button>
+					<el-button size="small" @click='searchStateData("")' :class="{'active':searchForm.state==''}">全部
+					</el-button>
 				</el-badge>
 				<el-badge :value="dqr" type="info" class="item">
-					<el-button size="small" @click='searchStateData(1)' :class="{'active':searchForm.state==1}">待确认</el-button>
+					<el-button size="small" @click='searchStateData(1)' :class="{'active':searchForm.state==1}">待确认
+					</el-button>
 				</el-badge>
 				<el-badge :value="dfp" type="primary" class="item">
-					<el-button size="small" @click='searchStateData(2)' :class="{'active':searchForm.state==2}">待分配</el-button>
+					<el-button size="small" @click='searchStateData(2)' :class="{'active':searchForm.state==2}">待分配
+					</el-button>
 				</el-badge>
 				<el-badge :value="yfp" type="warning" class="item">
-					<el-button size="small" @click='searchStateData(3)' :class="{'active':searchForm.state==3}">已分配</el-button>
+					<el-button size="small" @click='searchStateData(3)' :class="{'active':searchForm.state==3}">已分配
+					</el-button>
 				</el-badge>
 				<el-badge :value="ywc" type="success" class="item">
-					<el-button size="small" @click='searchStateData(4)' :class="{'active':searchForm.state==4}">已完成</el-button>
+					<el-button size="small" @click='searchStateData(4)' :class="{'active':searchForm.state==4}">已完成
+					</el-button>
 				</el-badge>
 				<el-badge :value="yqx" type="danger">
-					<el-button size="small" @click='searchStateData(5)' :class="{'active':searchForm.state==5}">已取消</el-button>
+					<el-button size="small" @click='searchStateData(5)' :class="{'active':searchForm.state==5}">已取消
+					</el-button>
 				</el-badge>
 			</div>
 		</el-col>
 
 		<!--列表-->
-		<el-table border :data="tableData" v-loading="listLoading" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
-		 ref="table">
+		<el-table border :data="tableData" v-loading="listLoading" id="exportTable" style="width: 100%"
+			:header-cell-style="{background:'#fafafa'}" ref="table">
 			<el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
 			<el-table-column prop="OrderNumber" label="订单编号" align="center" width="135">
 				<template slot-scope="scope">
-					<el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumber}}</el-link>
+					<el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">
+						{{scope.row.OrderNumber}}
+					</el-link>
+				</template>
+			</el-table-column>
+			<el-table-column prop="OrderProductPictures" label="产品图" align="center">
+				<template slot-scope="scope">
+					<el-image style="width: 40px;height: 40px;" v-if="scope.row.ProductPictures"
+						:src="'/'+scope.row.ProductPictures">
+					</el-image>
 				</template>
 			</el-table-column>
 			<el-table-column prop="ServiceType" label="订单类型" align="center" width="110">
@@ -66,10 +84,12 @@
 				</template>
 			</el-table-column>
 			<el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
-			<el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
+			<el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'>
+			</el-table-column>
 			<el-table-column prop="ShopName" label="店铺" align="center" :show-overflow-tooltip='true'></el-table-column>
 			<el-table-column prop="Asin" label="ASIN" align="center" width="110"></el-table-column>
-			<el-table-column prop="ProductKeyword" label="关键词" align="center" :show-overflow-tooltip='true'></el-table-column>
+			<el-table-column prop="ProductKeyword" label="关键词" align="center" :show-overflow-tooltip='true'>
+			</el-table-column>
 			<el-table-column prop="ExchangeRate" label="汇率" align="center"></el-table-column>
 			<el-table-column prop="Number" label="任务数" align="center"></el-table-column>
 			<el-table-column prop="AddedFee" label="增值费" align="center"></el-table-column>
@@ -80,7 +100,7 @@
 					<span class="danger">{{scope.row.Total}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="OrderTime" label="下单时间" align="center" width="155"></el-table-column>
+			<el-table-column prop="OrderTime" label="下单时间" align="center" width="100"></el-table-column>
 			<el-table-column prop="OrderState" label="状态" align="center">
 				<template slot-scope="scope">
 					<span v-if="scope.row.OrderState==1">待确认</span>
@@ -92,8 +112,10 @@
 			</el-table-column>
 			<el-table-column prop="OrderState" label="操作" align="center" width="145">
 				<template slot-scope="scope">
-					<el-button size="small" @click="cancelHandel(scope.$index,scope.row)" type="danger" v-show="scope.row.state==1">取消</el-button>
-					<el-button size="small" @click="createOrderAgain(scope.$index,scope.row)" type="primary">再来一单</el-button>
+					<el-button size="small" @click="cancelHandel(scope.$index,scope.row)" type="danger"
+						v-show="scope.row.state==1">取消</el-button>
+					<el-button size="small" @click="createOrderAgain(scope.$index,scope.row)" type="primary">再来一单
+					</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -101,14 +123,14 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page="pageIndex" :page-sizes="[10, 20, 50, 100, 1000]" :page-size="10" layout="total, sizes, prev, pager, next, jumper"
-			 :total="total">
+				:current-page="pageIndex" :page-sizes="[10, 20, 50, 100, 1000]" :page-size="10"
+				layout="total, sizes, prev, pager, next, jumper" :total="total">
 			</el-pagination>
 		</el-col>
 
 		<!-- 创建订单 -->
-		<el-dialog title="创建订单" :visible.sync="addOrderModal" width="70%" custom-class="fixed-dialog" :close-on-click-modal="false"
-		 :before-close="closeModel">
+		<el-dialog title="创建订单" :visible.sync="addOrderModal" width="70%" custom-class="fixed-dialog"
+			:close-on-click-modal="false" :before-close="closeModel">
 			<el-row>
 				<el-col :span="24" :xs="24">
 					<el-form :model="orderForm" ref="orderForm" :rules="orderRule" status-icon label-width="110px">
@@ -116,9 +138,23 @@
 							<div slot="header" class="clearfix">
 								<span>产品信息</span>
 							</div>
+							<el-col :span="24" :xs="24">
+								<el-form-item label='产品图片' prop='ProductPictures' class="mt20 p-img">
+									<el-upload class="avatar-uploader" name="image"
+										action="/api/Order/GetProductPictures" :show-file-list="false"
+										:on-success="handleAvatarSuccess" :on-error="handleError"
+										:before-upload="beforeAvatarUpload"
+										accept="image/jpeg,image/png,image/gif,image/bmp">
+										<img v-if="imageUrl" :src="imageUrl" class="avatar">
+										<i v-else class="el-icon-plus avatar-uploader-icon"></i>
+									</el-upload>
+									<el-input v-show="false" v-model='orderForm.ProductPictures'></el-input>
+								</el-form-item>
+							</el-col>
 							<el-col :span="8" :xs="24">
 								<el-form-item label="订单类型" prop="ServiceType">
-									<el-select v-model="orderForm.ServiceType" placeholder="请选择订单类型" style="width: 100%">
+									<el-select v-model="orderForm.ServiceType" placeholder="请选择订单类型"
+										style="width: 100%">
 										<el-option value="1" label="评后返（代返）"></el-option>
 										<el-option value="2" label="评后返（自返）"></el-option>
 									</el-select>
@@ -126,8 +162,10 @@
 							</el-col>
 							<el-col :span="8" :xs="24">
 								<el-form-item label="国家" prop="CountryId">
-									<el-select v-model="orderForm.CountryId" placeholder="请选择" @change='changeCountry' style="width: 100%">
-										<el-option v-for="(item,index) in countryData" :key="index" :value="item.Id" :label="item.CountryName"></el-option>
+									<el-select v-model="orderForm.CountryId" placeholder="请选择" @change='changeCountry'
+										style="width: 100%">
+										<el-option v-for="(item,index) in countryData" :key="index" :value="item.Id"
+											:label="item.CountryName"></el-option>
 									</el-select>
 								</el-form-item>
 							</el-col>
@@ -139,13 +177,15 @@
 							</el-col>
 							<el-col :span="8" :xs="24">
 								<el-form-item label="产品品牌" prop="Brand">
-									<el-input v-model="orderForm.Brand" maxlength="50" show-word-limit placeholder="请输入产品品牌">
+									<el-input v-model="orderForm.Brand" maxlength="50" show-word-limit
+										placeholder="请输入产品品牌">
 									</el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="8" :xs="24">
 								<el-form-item label="产品ASIN" prop="Asin">
-									<el-input v-model="orderForm.Asin" maxlength="10" show-word-limit placeholder="长度为10的数字字母组合"></el-input>
+									<el-input v-model="orderForm.Asin" maxlength="10" show-word-limit
+										placeholder="请输入产品ASIN"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="8" :xs="24">
@@ -158,37 +198,31 @@
 							<el-col :span="8" :xs="24">
 								<el-form-item label="产品评分" prop="ProductPrice">
 									<el-form-item>
-										<el-rate v-model="orderForm.ProductScore" style="border: 1px solid #DCDFE6;padding: 8px;border-radius: 4px;position: relative;top: -3px;"></el-rate>
+										<el-rate v-model="orderForm.ProductScore"
+											style="border: 1px solid #DCDFE6;padding: 8px;border-radius: 4px;position: relative;top: -3px;">
+										</el-rate>
 									</el-form-item>
 								</el-form-item>
 							</el-col>
 							<el-col :span="16" :xs="24">
 								<el-form-item label="产品位置" prop="Place">
-									<el-input v-model="orderForm.Place" maxlength="500" show-word-limit class="limit-txt" placeholder="请输入产品所在位置"></el-input>
+									<el-input v-model="orderForm.Place" maxlength="500" show-word-limit
+										class="limit-txt" placeholder="请输入产品所在位置"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="24" :xs="24">
 								<el-form-item label="产品名称" style="width: 100%;" prop="ProductName">
-									<el-input v-model="orderForm.ProductName" maxlength="500" show-word-limit class="limit-txt" placeholder="请输入产品名称"></el-input>
+									<el-input v-model="orderForm.ProductName" maxlength="500" show-word-limit
+										class="limit-txt" placeholder="请输入产品名称"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="24" :xs="24">
 								<el-form-item label="产品链接" style="width: 100%;" prop="ProductLink">
-									<el-input v-model="orderForm.ProductLink" maxlength="500" show-word-limit class="limit-txt" placeholder="请以http://或者https://开头"></el-input>
-								</el-form-item>
-							</el-col>
-							<el-col :span="24" :xs="24">
-								<el-form-item label='产品图片' prop='ProductPictures' class="mt20 p-img">
-									<el-upload class="avatar-uploader" name="image" action="/api/Order/GetProductPictures" :show-file-list="false"
-									 :on-success="handleAvatarSuccess" :on-error="handleError" :before-upload="beforeAvatarUpload" accept="image/jpeg,image/png,image/gif,image/bmp">
-										<img v-if="imageUrl" :src="imageUrl" class="avatar">
-										<i v-else class="el-icon-plus avatar-uploader-icon"></i>
-									</el-upload>
-									<el-input v-show="false" v-model='orderForm.ProductPictures'></el-input>
+									<el-input v-model="orderForm.ProductLink" maxlength="500" show-word-limit
+										class="limit-txt" placeholder="请以http://或者https://开头"></el-input>
 								</el-form-item>
 							</el-col>
 						</el-card>
-
 						<el-card class="box-card mt10">
 							<div slot="header" class="clearfix">
 								<span>下单信息</span>
@@ -203,38 +237,45 @@
 							</el-col>
 							<el-col :span="12" :xs="24">
 								<el-form-item label="关键词" prop="ProductKeyword">
-									<el-input v-model="orderForm.ProductKeyword" :rows="5" maxlength="500" show-word-limit placeholder='请输入关键词'></el-input>
+									<el-input v-model="orderForm.ProductKeyword" :rows="5" maxlength="500"
+										show-word-limit placeholder='请输入关键词'></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="12" :xs="24">
 								<el-form-item label="留评比例" prop="ProductPosition">
-									<el-select v-model="orderForm.ProductPosition" placeholder="请选择" @change="getFee" style="width: 246px;">
-										<el-option v-for="(item,index) in biliData" :key="index" :value="item.bili" :label="item.bili"></el-option>
+									<el-select v-model="orderForm.ProductPosition" placeholder="请选择留评比例"
+										@change="getFee" style="width: 246px;">
+										<el-option v-for="(item,index) in biliData" :key="index" :value="item.bili"
+											:label="item.bili"></el-option>
 									</el-select>
 								</el-form-item>
 							</el-col>
 							<el-col :span="12" :xs="24">
 								<el-form-item label="任务开始时间" prop="StartTime">
-									<el-date-picker v-model="orderForm.StartTime" value-format="yyyy-MM-dd" style="display: inline-block;width: 100%;"
-									 type="date" placeholder="选择日期" :picker-options="startDataOp">
+									<el-date-picker v-model="orderForm.StartTime" value-format="yyyy-MM-dd"
+										style="display: inline-block;width: 100%;" type="date" placeholder="选择日期"
+										:picker-options="startDataOp">
 									</el-date-picker>
 								</el-form-item>
 							</el-col>
 							<el-col :span="12" :xs="24">
 								<el-form-item label="订单数量" prop="Number">
-									<el-input v-model="orderForm.Number" placeholder="请输入正整数" style="width: 246px;"></el-input>
+									<el-input v-model="orderForm.Number" placeholder="请输入订单数量" style="width: 246px;">
+									</el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span='12' :xs="24">
 								<el-form-item label="任务结束时间">
-									<el-date-picker v-model="orderForm.EndTime" value-format="yyyy-MM-dd" style="display: inline-block;width: 100%;"
-									 type="date" placeholder="选择日期" :picker-options="endDateOp">
+									<el-date-picker v-model="orderForm.EndTime" value-format="yyyy-MM-dd"
+										style="display: inline-block;width: 100%;" type="date" placeholder="选择日期"
+										:picker-options="endDateOp">
 									</el-date-picker>
 								</el-form-item>
 							</el-col>
 							<el-col :span='24' :xs="24">
 								<el-form-item label='下单备注' prop='Remarks'>
-									<el-input type='textarea' :autosize="{ minRows: 5, maxRows: 8}" v-model='orderForm.Remarks'></el-input>
+									<el-input type='textarea' :autosize="{ minRows: 5, maxRows: 8}"
+										v-model='orderForm.Remarks'></el-input>
 								</el-form-item>
 							</el-col>
 						</el-card>
@@ -243,19 +284,22 @@
 								<div v-show="this.orderForm.ServiceType==1">
 									<span>产品总价：</span>
 									<span class="danger">￥{{productTotal}}</span>
-									<span class="ml20">(产品总价) = {{orderForm.ProductPrice}} (产品价格) * {{Number(orderForm.Number)}} (数量) * {{rate}}
+									<span class="ml20">(产品总价) = {{orderForm.ProductPrice}} (产品价格) *
+										{{Number(orderForm.Number)}} (数量) * {{rate}}
 										(汇率)</span>
 								</div>
 								<div class="mt20">
 									<span>服务费：</span>
 									<span class="danger">￥{{serviceFeeTotal}}</span>
-									<span class="ml20">(服务费) = {{fee}} (服务费单价) * {{Number(orderForm.Number)}} (数量) + {{addFee}}(增值费单价) *
+									<span class="ml20">(服务费) = {{fee}} (服务费单价) * {{Number(orderForm.Number)}} (数量) +
+										{{addFee}}(增值费单价) *
 										{{Number(orderForm.Number)}} (数量)</span>
 								</div>
 								<div class="mt20">
 									<span>合计：</span>
 									<span class="danger">￥{{allTotal}}</span>
-									<span class="ml20">(合计) = <span v-show="this.orderForm.ServiceType==1">{{productTotal}} (产品总价) +</span>
+									<span class="ml20">(合计) = <span
+											v-show="this.orderForm.ServiceType==1">{{productTotal}} (产品总价) +</span>
 										{{serviceFeeTotal}}(服务费)</span>
 								</div>
 							</div>
@@ -270,7 +314,8 @@
 		</el-dialog>
 
 		<!-- 付款-->
-		<el-dialog title="付款" :visible.sync="payModel" :close-on-click-modal="false" width="20%" center :before-close="payClose">
+		<el-dialog title="付款" :visible.sync="payModel" :close-on-click-modal="false" width="20%" center
+			:before-close="payClose">
 			<div class="txt-c">
 				<div>
 					<span>账户余额：</span>
@@ -302,15 +347,43 @@
 				</div>
 				<el-form :model='viewOrderData' ref='viewOrderData' label-width='150px'>
 					<el-row>
-						<el-col :span="12">
-							<el-form-item label='订单编码：' prop="OrderNumbers">
-								<span>{{viewOrderData.OrderNumber}}</span>
+						<el-col :span="24">
+							<el-form-item label='产品图片：' prop="ProductPictures">
+								<el-image style="width: 80px" class="pointer" v-if="viewOrderData.ProductPictures"
+									:src="'/'+viewOrderData.ProductPictures"
+									:preview-src-list="('/'+viewOrderData.ProductPictures || '').split(',')"></el-image>
+							</el-form-item>
+						</el-col>
+						<el-col :span="24">
+							<el-form-item label='产品链接：' prop="ProductLink">
+								<el-link type="primary" :underline="false" :href="viewOrderData.ProductLink"
+									target="_blank">{{viewOrderData.ProductLink}}</el-link>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='下单类型：' prop="ServiceType">
+							<el-form-item label='订单类型：' prop="ServiceType">
 								<span v-if="viewOrderData.ServiceType==1">评后返（代返）</span>
 								<span v-if="viewOrderData.ServiceType==2">评后返（自返）</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12">
+							<el-form-item label='产品名称：' prop="ProductName">
+								<span>{{viewOrderData.ProductName}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12">
+							<el-form-item label='产品ASIN：' prop="Asin">
+								<span>{{viewOrderData.Asin}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12">
+							<el-form-item label='店铺名称：' prop="ShopName">
+								<span>{{viewOrderData.ShopName}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12">
+							<el-form-item label='产品单价：' prop="ProductPrice">
+								<span>{{viewOrderData.symbol}}{{viewOrderData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
@@ -321,45 +394,16 @@
 						<el-col :span="12">
 							<el-form-item label='订单状态：' prop="OrderState">
 								<span v-if="viewOrderData.OrderState==1">待确认</span>
-								<span v-if="viewOrderData.OrderState==2">待分配</span>
-								<span v-if="viewOrderData.OrderState==3">已分配</span>
-								<span v-if="viewOrderData.OrderState==4">已完成</span>
-								<span v-if="viewOrderData.OrderState==5">已取消</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='店铺名称：' prop="ShopName">
-								<span>{{viewOrderData.ShopName}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品ASIN：' prop="Asin">
-								<span>{{viewOrderData.Asin}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品名称：' prop="ProductName">
-								<span>{{viewOrderData.ProductName}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品单价：' prop="ProductPrice">
-								<span>{{viewOrderData.Currency}}{{viewOrderData.ProductPrice}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品链接：' prop="ProductLink">
-								<a :href="viewOrderData.ProductLink">{{viewOrderData.ProductLink}}</a>
+								<span class="primary" v-if="viewOrderData.OrderState==2">待分配</span>
+								<span class="warning" v-if="viewOrderData.OrderState==3">已分配</span>
+								<span class="success" v-if="viewOrderData.OrderState==4">已完成</span>
+								<span class="danger" v-if="viewOrderData.OrderState==5">已取消</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
 							<el-form-item label='产品评分：' prop="ProductScore">
-								<el-rate style="margin-top: 10px;" v-model="viewOrderData.ProductScore" disabled show-score text-color="#ff9900"></el-rate>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品图片：' prop="ProductPictures">
-								<img v-show="viewOrderData.ProductPictures" :src="'/'+viewOrderData.ProductPictures" class="eval_img">
+								<el-rate style="margin-top: 10px;" v-model="viewOrderData.ProductScore" disabled
+									show-score text-color="#ff9900"></el-rate>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -371,6 +415,11 @@
 				</div>
 				<el-form :model='viewOrderData' ref='viewOrderData' label-width='150px'>
 					<el-row>
+						<el-col :span="12">
+							<el-form-item label='订单编号：' prop="OrderNumbers">
+								<span>{{viewOrderData.OrderNumber}}</span>
+							</el-form-item>
+						</el-col>
 						<el-col :span="12">
 							<el-form-item label='关键词类型：' prop="KeywordType">
 								<span v-if="viewOrderData.KeywordType==1">产品关键词</span>
@@ -426,7 +475,8 @@
 							<el-form-item label='合计：' prop="Total">
 								<span style="color: red;">{{viewOrderData.Total}}</span>
 								<span style="margin-left: 15px;"> {{viewOrderData.TotalProductPrice}} (产品总价) +
-									{{viewOrderData.UnitPriceSerCharge}}(服务费单价) * {{viewOrderData.Number}} (任务数量) + {{viewOrderData.AddedFee}}
+									{{viewOrderData.UnitPriceSerCharge}}(服务费单价) * {{viewOrderData.Number}} (任务数量) +
+									{{viewOrderData.AddedFee}}
 									(增值费单价) * {{viewOrderData.Number}}(任务数量)</span>
 							</el-form-item>
 						</el-col>
@@ -447,8 +497,7 @@
 </template>
 
 <script>
-	import FileSaver from 'file-saver'
-	import XLSX from 'xlsx'
+	import table2excel from 'js-table2excel'
 
 	import {
 		orderList,
@@ -485,7 +534,7 @@
 				searchForm: {
 					searchWords: '',
 					state: '',
-					country: 0,
+					country: [],
 					time: []
 				},
 				all: 0, //全部
@@ -573,7 +622,7 @@
 					}],
 					ProductPrice: [{
 							required: true,
-							message: '请输入商品原价',
+							message: '请输入产品价格',
 							trigger: 'blur'
 						},
 						{
@@ -588,8 +637,8 @@
 							trigger: 'blur'
 						},
 						{
-							pattern: /^[0-9]\d*$/,
-							message: '订单数量必须为大于等于0的整数',
+							pattern: /^[1-9]\d*$/,
+							message: '订单数量必须为正整数',
 							trigger: 'blur'
 						}
 					],
@@ -634,7 +683,8 @@
 			productTotal: function() {
 				let type = this.orderForm.ServiceType
 				if (type == '1') {
-					return (Number(this.orderForm.ProductPrice) * Number(this.orderForm.Number) * Number(this.rate)).toFixed(2)
+					return (Number(this.orderForm.ProductPrice) * Number(this.orderForm.Number) * Number(this.rate))
+						.toFixed(2)
 				} else {
 					return Number(0).toFixed(2)
 				}
@@ -836,6 +886,7 @@
 				_this.orderForm.Remarks = row.Remarks
 				_this.imageUrl = row.ProductPictures
 				_this.getRateSymbol() //汇率货币符号
+				_this.getBiliData() //留评比例
 				_this.getFee() //服务费
 				_this.getAddFee() //增值费
 			},
@@ -880,7 +931,7 @@
 					if (valid) {
 						_this.btnLoading = true
 
-						let param = Object.assign({}, _this.taskForm)
+						let param = Object.assign({}, _this.orderForm)
 						param.UserId = sessionStorage.getItem('userId')
 
 						param.TotalProductPrice = _this.productTotal //产品总价
@@ -891,14 +942,13 @@
 						param.UnitPriceSerCharge = _this.fee //服务费单价
 						param.AddedFee = _this.addFee //增值费
 
-						if (_this.taskForm.ServiceType == '2') {
+						if (_this.orderForm.ServiceType == '2') {
 							param.TotalProductPrice = 0 //产品总价
 							param.ExchangeRate = 0 //汇率
 						}
 
 						addOrder(param).then((res) => {
 							_this.btnLoading = false
-							_this.$refs['taskForm'].resetFields()
 							_this.closeModel()
 							_this.showPay()
 							_this.allOrderList()
@@ -985,6 +1035,14 @@
 				let _this = this
 				_this.title = '订单【' + row.OrderNumber + '】详情'
 				_this.viewOrderData = Object.assign({}, row)
+				//获取货币符号
+				let rateData = _this.rateData
+				let countryId = row.CountryId
+				for (let x in rateData) {
+					if (rateData[x].CountryId == countryId) {
+						_this.viewOrderData.symbol = rateData[x].CurrencySymbol
+					}
+				}
 				_this.viewModal = true //获取到数据后显示模态框
 			},
 
@@ -1039,7 +1097,7 @@
 			resetSearch() {
 				let _this = this
 				_this.searchForm.searchWords = ''
-				_this.searchForm.country = 0
+				_this.searchForm.country = []
 				_this.searchForm.time = []
 				_this.pageIndex = 1
 				_this.getAllData()
@@ -1058,27 +1116,135 @@
 				_this.getAllData()
 			},
 
-			// 导出
+			//导出
 			exportExcel() {
-				var xlsxParam = {
-					raw: true
-				}
-				var wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'), xlsxParam)
-				var wbout = XLSX.write(wb, {
-					bookType: 'xlsx',
-					bookSST: true,
-					type: 'array'
-				})
-				try {
-					FileSaver.saveAs(new Blob([wbout], {
-						type: 'application/octet-stream'
-					}), '订单数据.xlsx')
-				} catch (e) {
-					if (typeof console !== 'undefined') {
-						console.log(e, wbout)
+				const column = [{
+						title: '订单编号',
+						key: 'OrderNumber',
+						type: 'text'
+					},
+					{
+						title: '产品图',
+						key: 'ExpProductImg',
+						type: 'image',
+						width: 100,
+						height: 100
+					},
+					{
+						title: '订单类型',
+						key: 'ExpServiceType',
+						type: 'text'
+					},
+					{
+						title: '国家',
+						key: 'CountryName',
+						type: 'text'
+					},
+					{
+						title: '产品名称',
+						key: 'ProductName',
+						type: 'text'
+					},
+					{
+						title: '店铺',
+						key: 'ShopName',
+						type: 'text'
+					},
+					{
+						title: 'ASIN',
+						key: 'Asin',
+						type: 'text'
+					},
+					{
+						title: '关键词',
+						key: 'ProductKeyword',
+						type: 'text'
+					},
+					{
+						title: '汇率',
+						key: 'ExchangeRate',
+						type: 'text'
+					},
+					{
+						title: '任务数',
+						key: 'Number',
+						type: 'text'
+					},
+					{
+						title: '增值费',
+						key: 'AddedFee',
+						type: 'text'
+					},
+					{
+						title: '服务费',
+						key: 'UnitPriceSerCharge',
+						type: 'text'
+					},
+					{
+						title: '产品总价',
+						key: 'TotalProductPrice',
+						type: 'text'
+					},
+					{
+						title: '合计',
+						key: 'Total',
+						type: 'text'
+					},
+					{
+						title: '下单时间',
+						key: 'OrderTime',
+						type: 'text'
+					},
+					{
+						title: '状态',
+						key: 'ExpOrderState',
+						type: 'text'
+					},
+				]
+
+				// 1.title为列名
+				// 2.key为data数据每个对象对应的key
+				// 3.若为图片格式, 需要加type为image的说明,并且可以设置图片的宽高
+				const data = this.tableData
+				// data数据一些特殊处理
+				for (const t in data) {
+					data[t].ExpProductImg = this.$IMG_URL + data[t].ProductPictures
+
+					let TxtServiceType = ''
+					if (data[t].ServiceType == 1) {
+						TxtServiceType = '评后返（代返）'
 					}
+					if (data[t].ServiceType == 2) {
+						TxtServiceType = '评后返（自返）'
+					}
+					data[t].ExpServiceType = TxtServiceType
+
+					let TxtOrderState = ''
+					if (data[t].OrderState == 1) {
+						TxtOrderState = '待确认'
+					}
+					if (data[t].OrderState == 2) {
+						TxtOrderState = '待分配'
+					}
+					if (data[t].OrderState == 3) {
+						TxtOrderState = '已分配'
+					}
+					if (data[t].OrderState == 4) {
+						TxtOrderState = '已完成'
+					}
+					if (data[t].OrderState == 5) {
+						TxtOrderState = '已取消'
+					}
+					data[t].ExpOrderState = TxtOrderState
 				}
-				return wbout
+				let date = new Date()
+				let year = date.getFullYear()
+				let month = date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
+				let day = date.getDate() <= 9 ? "0" + date.getDate() : date.getDate()
+				let time = year + '-' + month + '-' + day
+
+				const excelName = '订单数据' + '_' + time + '.xls'
+				table2excel(column, data, excelName)
 			}
 		}
 	}

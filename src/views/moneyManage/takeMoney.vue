@@ -2,32 +2,44 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="searchForm">
-				<el-form-item>
-					<el-date-picker size="small" v-model="searchForm.time" :unlink-panels='true' type="datetimerange" range-separator="至"
-					 start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+			<el-form :inline="true" :model="searchForm" size="small">
+				<el-form-item label="申请时间">
+					<el-date-picker v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
+						range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"
+						value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
-				<el-form-item>
-					<el-select v-model="searchForm.state" placeholder="状态" size="small">
-						<el-option value="" label="全部"></el-option>
-						<el-option value="1" label="待处理"></el-option>
-						<el-option value="2" label="提现成功"></el-option>
-						<el-option value="3" label="提现失败"></el-option>
+				<el-form-item label="提现状态">
+					<el-select v-model="searchForm.state" placeholder="状态">
+						<el-option :value="0" label="全部"></el-option>
+						<el-option :value="1" label="待处理"></el-option>
+						<el-option :value="2" label="提现成功"></el-option>
+						<el-option :value="3" label="提现失败"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item>
-					<el-button size="small" @click="searchData">查询</el-button>
+					<el-button @click="searchData">查询</el-button>
+					<el-button @click="resetSearch">重置</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button size="small" type="infor" @click="handtakeModal">申请提现</el-button>
+					<span v-if="balance<0">
+						<el-button type="primary" @click="handtakeModal">申请提现</el-button>
+					</span>
+					<span v-else>
+						<el-tooltip content="余额不足，不可提现" placement="top" effect="light">
+							<el-button type="info">申请提现</el-button>
+						</el-tooltip>
+					</span>
+				</el-form-item>
+				<el-form-item label="账户余额" style="border: 1px solid #E6A23C;padding: 0 15px;">
+					<span class="success fz16 bold">{{balance}}</span>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="tableData" @selection-change="selsChange" v-loading="listLoading" style="width: 100%" id="tableData"
-		 ref='tableData'>
-			<el-table-column type="index" label="#" align="center"></el-table-column>
+		<el-table border :data="tableData" v-loading="listLoading" id="exportTable" style="width: 100%"
+			:header-cell-style="{background:'#fafafa'}" ref="table">
+			<el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
 			<el-table-column prop="RemoveMoenyNumber" label="流水号" align="center"></el-table-column>
 			<el-table-column prop="RemoveMoeny" label="提现金额" align="center"></el-table-column>
 			<el-table-column prop="RemoveMoenyTime" label="申请时间" align="center"></el-table-column>
@@ -45,19 +57,15 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<span style="position: relative;top: 5px;color: #606266;">
-				<span>余额：{{balance}}</span>
-				<span style="margin-left: 30px;">总收入：{{allIn}}</span>
-				<span style="margin-left: 30px;">总支出：{{allOut}}</span>
-			</span>
 			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page="pageNum" :page-sizes="[10, 20, 50, 100]" :page-size="10" layout="total, sizes, prev, pager, next, jumper"
-			 :total="total">
+				:current-page="pageNum" :page-sizes="[10, 20, 50, 100]" :page-size="10"
+				layout="total, sizes, prev, pager, next, jumper" :total="total">
 			</el-pagination>
 		</el-col>
 
 		<!-- 提现 -->
-		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="30%">
+		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal"
+			width="30%">
 			<el-form :model="editForm" label-width="80px" :rules="rules" ref="editForm">
 				<el-form-item label="提现金额" prop="money">
 					<el-input v-model="editForm.money"></el-input>
@@ -85,12 +93,24 @@
 	import {
 		takeMoneyList,
 		takeMoneyAdd,
-		moneyList
+		userInfo
 	} from '@/api/api'
 
 	export default {
 		name: 'takeMoney',
 		data() {
+			let checkMoney = (rule, value, callback) => {
+				const reg = /^(([1-9]{1}\d*)|(0{1}))(\.\d{1,2})?$/
+				if (!value) {
+					return callback(new Error('提现金额不能为空'));
+				} else if (!reg.test(value)) {
+					callback(new Error('提现金额格式不正确'));
+				} else if (Number(value) > Number(this.balance)) {
+					callback(new Error('提现金额不能大于余额'));
+				} else {
+					callback();
+				}
+			};
 			return {
 				title: '',
 				pageNum: 1,
@@ -104,8 +124,9 @@
 				selsData: [],
 				selectId: '',
 				searchForm: {
-					time: ['', ''],
-					state: ''
+					time: [],
+					keyWord: '',
+					state: 0
 				},
 				editForm: {
 					money: '',
@@ -120,14 +141,13 @@
 							trigger: 'blur'
 						},
 						{
-							pattern: /^(([1-9]{1}\d*)|(0{1}))(\.\d{1,2})?$/,
-							message: '金额格式不正确',
-							trigger: 'blur'
+							validator: checkMoney,
+							trigger: 'blur',
 						}
 					],
 					account: [{
 						required: true,
-						message: '请输入提现账户',
+						message: '请输入提现银行账号',
 						trigger: 'blur'
 					}],
 					bank: [{
@@ -141,14 +161,12 @@
 						trigger: 'blur'
 					}]
 				},
-				balance: 0,
-				allIn: 0,
-				allOut: 0
+				balance: 0
 			}
 		},
 		created() {
 			this.getData()
-			this.getBalanceData()
+			this.getBalance()
 		},
 		methods: {
 			// 获取列表数据
@@ -163,10 +181,11 @@
 					time2 = time[1]
 				}
 				let params = {
-					UserId: sessionStorage.getItem('userId'),
-					Statetime: time1,
-					Endtime: time2,
-					State: _this.searchForm.state,
+					userId: sessionStorage.getItem('userId'),
+					statetime: time1,
+					endtime: time2,
+					kWord: _this.searchForm.keyWord,
+					state: _this.searchForm.state,
 					pageNum: _this.pageNum,
 					pagesize: _this.pageSize
 				}
@@ -177,21 +196,14 @@
 				}).catch((e) => {})
 			},
 
-			//获取余额数据
-			getBalanceData() {
+			// 获取余额信息
+			getBalance() {
 				let _this = this
 				let params = {
-					UserId: sessionStorage.getItem('userId'),
-					Statetime: '',
-					Endtime: '',
-					State: '0',
-					pageNum: 1,
-					pagesize: 100000000
+					Id: sessionStorage.getItem('userId')
 				}
-				moneyList(params).then(res => {
-					_this.balance = res.Account[0].AccountBalance
-					_this.allIn = res.Account[0].AccumulatedIncome
-					_this.allOut = res.Account[0].AccumulatedExpenditure
+				userInfo(params).then(res => {
+					_this.balance = res[0].accountbalance
 				}).catch((e) => {})
 			},
 
@@ -247,6 +259,16 @@
 				_this.getData()
 			},
 
+			//重置
+			resetSearch() {
+				let _this = this
+				_this.pageNum = 1
+				_this.searchForm.time = []
+				_this.searchForm.keyWord = ''
+				_this.searchForm.state = 0
+				_this.getData()
+			},
+
 			//选中数据
 			selsChange(selsData) {
 				this.selsData = selsData
@@ -258,7 +280,6 @@
 				_this.pageSize = val
 				_this.getData()
 			},
-			//跳转
 			handleCurrentChange(val) {
 				let _this = this
 				_this.pageNum = val

@@ -13,7 +13,7 @@
 						<i :class="collapsed?'el-icon-notebook-2':'el-icon-tickets'"></i>
 					</span>
 				</el-col>
-				<el-col :span="16" class="userinfo">
+				<el-col :span="8" class="userinfo">
 					<span style="margin-right: 30px;">
 						<span class="ml10">{{nowDate}}</span>
 						<span class="ml10">{{nowTime}}</span>
@@ -34,82 +34,78 @@
 			</el-col>
 			<el-col :span="24" class="main">
 				<aside :class="collapsed?'menu-collapsed':'menu-expanded'">
-					<!--导航菜单-未折叠-->
-					<el-menu :default-active="$route.path" class="el-menu-vertical-demo" unique-opened router v-show="!collapsed">
+					<!--导航菜单-未折叠状态-->
+					<el-menu :default-active="$route.path" unique-opened router v-show="!collapsed">
 						<template v-for="(item,index) in routes">
+							<!--非单节点菜单-->
 							<el-submenu :index="index+''" :key="item.name" v-if="!item.leaf">
-								<!--遍历的其中一个菜单项,设置有单节点的。-->
 								<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
-								<el-menu-item v-for="child in routeChildren(item)" :index="child.path" :key="child.path">
+								<el-menu-item v-for="child in routeChildren(item)" :index="child.path"
+									:key="child.path">
 									{{child.name}}
 								</el-menu-item>
 							</el-submenu>
-							<el-menu-item v-if="item.leaf&&item.children.length>0" :key="item.name" :index="item.children[0].path"><i :class="item.iconCls"></i>{{item.children[0].name}}
+							<!-- 单节点菜单 -->
+							<el-menu-item v-if="item.leaf&&item.children.length>0" :key="item.name"
+								:index="item.children[0].path"><i :class="item.iconCls"></i>{{item.children[0].name}}
 							</el-menu-item>
 						</template>
 					</el-menu>
+					<!--导航菜单-折叠状态-->
 					<ul class="el-menu el-menu-vertical-demo collapsed" v-show="collapsed" ref="menuCollapsed">
 						<li v-for="(item,index) in routes" :key="item.name" class="el-submenu item">
-							<!--非单节点route渲染-->
-							<div v-if="!item.leaf">
-								<!--经过菜单显示对应ul的事件-->
-								<div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)"><i
-									 :class="item.iconCls"></i></div>
-								<ul class="el-menu submenu" :class="'submenu-hook-'+index" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)">
-									<li v-for="child in item.children" :key="child.path" class="el-menu-item" style="padding-left: 40px;" :class="$route.path===child.path?'is-active':''"
-									 @click="$router.push(child.path)">{{child.name}}
-									</li>
-								</ul>
-							</div>
-							<div v-else>
-						<li class="el-submenu">
-							<div class="el-submenu__title el-menu-item" style="height: 56px;line-height: 56px;padding: 0 20px;" :class="$route.path===item.children[0].path?'is-active':''"
-							 @click="$router.push(item.children[0].path)"><i :class="item.iconCls"></i>
-							</div>
+							<div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)"
+								@mouseout="showMenu(index,false)"><i :class="item.iconCls"></i></div>
+							<ul class="el-menu submenu" :class="'submenu-hook-'+index" @mouseover="showMenu(index,true)"
+								@mouseout="showMenu(index,false)">
+								<li v-for="child in item.children" :key="child.path" class="el-menu-item"
+									style="padding-left: 40px;" :class="$route.path===child.path?'is-active':''"
+									@click="$router.push(child.path)">{{child.name}}
+								</li>
+							</ul>
 						</li>
-	</div>
-	</li>
-	</ul>
-	</aside>
+					</ul>
+				</aside>
 
-	<section class="content-container">
-		<div class="grid-content bg-purple-light">
-			<el-col :span="24" class="breadcrumb-container">
-				<strong class="title">{{$route.name}}</strong>
-				<el-breadcrumb separator="/" class="breadcrumb-inner">
-					<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
-						{{ item.name }}
-					</el-breadcrumb-item>
-				</el-breadcrumb>
+				<section class="content-container">
+					<div class="grid-content bg-purple-light">
+						<el-col :span="24" class="breadcrumb-container">
+							<strong class="title">{{$route.name}}</strong>
+							<el-breadcrumb separator="/" class="breadcrumb-inner">
+								<el-breadcrumb-item v-for="item in $route.matched" :key="item.path">
+									{{ item.name }}
+								</el-breadcrumb-item>
+							</el-breadcrumb>
+						</el-col>
+						<el-col :span="24" class="content-wrapper">
+							<transition name="fade" mode="out-in">
+								<router-view></router-view>
+							</transition>
+						</el-col>
+					</div>
+				</section>
 			</el-col>
-			<el-col :span="24" class="content-wrapper">
-				<transition name="fade" mode="out-in">
-					<router-view></router-view>
-				</transition>
-			</el-col>
-		</div>
-	</section>
-	</el-col>
-	</el-row>
+		</el-row>
 
-	<!--修改密码-->
-	<el-dialog title="修改密码" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal" width="30%">
-		<el-form :model="editForm" label-width="100px" :rules="rules" ref="editForm">
-			<el-form-item label="原密码" prop="passwordOld">
-				<el-input v-model="editForm.passwordOld"></el-input>
-			</el-form-item>
-			<el-form-item label="新密码" prop="passwordNew">
-				<el-input v-model="editForm.passwordNew"></el-input>
-			</el-form-item>
-			<el-form-item label="确认新密码" prop="passwordAgain">
-				<el-input v-model="editForm.passwordAgain"></el-input>
-			</el-form-item>
-		</el-form>
-		<div slot="footer" class="dialog-footer">
-			<el-button @click="closeModal">取消</el-button>
-			<el-button type="primary" @click="editPassWord" :loading="btnLoading">提交</el-button>
-		</div>
-	</el-dialog>
+		<!--修改密码-->
+		<el-dialog title="修改密码" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal"
+			width="30%">
+			<el-form :model="editForm" label-width="100px" :rules="rules" ref="editForm">
+				<el-form-item label="原密码" prop="passwordOld">
+					<el-input v-model="editForm.passwordOld"></el-input>
+				</el-form-item>
+				<el-form-item label="新密码" prop="passwordNew">
+					<el-input v-model="editForm.passwordNew"></el-input>
+				</el-form-item>
+				<el-form-item label="确认新密码" prop="passwordAgain">
+					<el-input v-model="editForm.passwordAgain"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="closeModal">取消</el-button>
+				<el-button type="primary" @click="editPassWord" :loading="btnLoading">提交</el-button>
+			</div>
+		</el-dialog>
 
 	</div>
 </template>
@@ -249,18 +245,24 @@
 				this.collapsed = !this.collapsed
 			},
 			showMenu(i, status) {
-				this.$refs.menuCollapsed.getElementsByClassName('submenu-hook-' + i)[0].style.display = status ? 'block' : 'none'
+				this.$refs.menuCollapsed.getElementsByClassName('submenu-hook-' + i)[0].style.display = status ? 'block' :
+					'none'
 			},
 
 			//获取年月日时分秒星期
 			timeFormate(timeStamp) {
 				let year = new Date(timeStamp).getFullYear()
-				let month = new Date(timeStamp).getMonth() + 1 < 10 ? "0" + (new Date(timeStamp).getMonth() + 1) : new Date(
-					timeStamp).getMonth() + 1
-				let date = new Date(timeStamp).getDate() < 10 ? "0" + new Date(timeStamp).getDate() : new Date(timeStamp).getDate()
-				let hh = new Date(timeStamp).getHours() < 10 ? "0" + new Date(timeStamp).getHours() : new Date(timeStamp).getHours()
-				let mm = new Date(timeStamp).getMinutes() < 10 ? "0" + new Date(timeStamp).getMinutes() : new Date(timeStamp).getMinutes()
-				let ss = new Date(timeStamp).getSeconds() < 10 ? "0" + new Date(timeStamp).getSeconds() : new Date(timeStamp).getSeconds()
+				let month = new Date(timeStamp).getMonth() + 1 < 10 ? "0" + (new Date(timeStamp).getMonth() + 1) :
+					new Date(
+						timeStamp).getMonth() + 1
+				let date = new Date(timeStamp).getDate() < 10 ? "0" + new Date(timeStamp).getDate() : new Date(timeStamp)
+					.getDate()
+				let hh = new Date(timeStamp).getHours() < 10 ? "0" + new Date(timeStamp).getHours() : new Date(timeStamp)
+					.getHours()
+				let mm = new Date(timeStamp).getMinutes() < 10 ? "0" + new Date(timeStamp).getMinutes() : new Date(
+					timeStamp).getMinutes()
+				let ss = new Date(timeStamp).getSeconds() < 10 ? "0" + new Date(timeStamp).getSeconds() : new Date(
+					timeStamp).getSeconds()
 				let week = new Date(timeStamp).getDay()
 				let weeks = ["日", "一", "二", "三", "四", "五", "六"]
 				this.nowDate = year + "年" + month + "月" + date + "日"

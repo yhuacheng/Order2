@@ -4,24 +4,31 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="searchForm" size="small">
 				<el-form-item label="搜索内容">
-					<el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="任务号/产品名称/购买单号" style="width: 220px;"></el-input>
-				</el-form-item>
-				<el-form-item label="国家">
-					<el-select v-model="searchForm.country" placeholder="请选择国家" style="width: 120px;">
-						<el-option :value="0" label="全部"></el-option>
-						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName" :value="item.Id"></el-option>
-					</el-select>
+					<el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords" placeholder="任务编号/产品名称/购买单号"
+						style="width: 200px;"></el-input>
 				</el-form-item>
 				<el-form-item label="任务类型">
-					<el-select v-model="searchForm.serveType" placeholder="请选择" style="width: 140px;">
-						<el-option value="0" label="全部"></el-option>
-						<el-option value="1" label="评后返(代返)"></el-option>
-						<el-option value="2" label="评后返(自返)"></el-option>
+					<el-select v-model="searchForm.type" placeholder="请选择" style="width: 120px;">
+						<el-option :value="0" label="全部"></el-option>
+						<el-option :value="1" label="评后返(代返)"></el-option>
+						<el-option :value="2" label="评后返(自返)"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="国家">
+					<el-select v-model="searchForm.country" multiple placeholder="请选择国家" style="width: 120px;">
+						<el-option v-for="item in countryData" :key="item.Id" :label="item.CountryName"
+							:value="item.Id"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="购买时间">
-					<el-date-picker v-model="searchForm.time" :unlink-panels='true' type="datetimerange" range-separator="至"
-					 start-placeholder="开始时间" end-placeholder="结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+					<el-date-picker v-model="searchForm.time" :unlink-panels='true' type="datetimerange"
+						range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"
+						value-format="yyyy-MM-dd HH:mm:ss" style="width: 335px;"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="返款时间">
+					<el-date-picker v-model="searchForm.time2" :unlink-panels='true' type="datetimerange"
+						range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"
+						value-format="yyyy-MM-dd HH:mm:ss" style="width: 335px;"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
 					<el-button @click="searchData">查询</el-button>
@@ -36,42 +43,60 @@
 			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出任务</el-button>
 			<div class="tagMenu">
 				<el-badge :value="all" type="success" class="item">
-					<el-button size="mini" @click='searchStateData(0)' :class="{'active':searchForm.state==0}">全部</el-button>
+					<el-button size="mini" @click='searchStateData(0)' :class="{'active':searchForm.state==0}">全部
+					</el-button>
 				</el-badge>
 				<el-badge :value="dfp" type="info" class="item">
-					<el-button size="mini" @click='searchStateData(1)' :class="{'active':searchForm.state==1}">待分配</el-button>
+					<el-button size="mini" @click='searchStateData(1)' :class="{'active':searchForm.state==1}">待分配
+					</el-button>
 				</el-badge>
 				<el-badge :value="dgm" type="warning" class="item">
-					<el-button size="mini" @click='searchStateData(2)' :class="{'active':searchForm.state==2}">待购买</el-button>
+					<el-button size="mini" @click='searchStateData(2)' :class="{'active':searchForm.state==2}">待购买
+					</el-button>
 				</el-badge>
 				<el-badge :value="dqrcd" type="primary" class="item">
-					<el-button size="mini" @click='searchStateData(3)' :class="{'active':searchForm.state==3}">待确认出单</el-button>
+					<el-button size="mini" @click='searchStateData(3)' :class="{'active':searchForm.state==3}">待确认出单
+					</el-button>
 				</el-badge>
 				<el-badge :value="dpj" type="warning" class="item">
-					<el-button size="mini" @click='searchStateData(4)' :class="{'active':searchForm.state==4}">待评价</el-button>
+					<el-button size="mini" @click='searchStateData(4)' :class="{'active':searchForm.state==4}">待评价
+					</el-button>
 				</el-badge>
 				<el-badge :value="dqrpj" type="primary" class="item">
-					<el-button size="mini" @click='searchStateData(5)' :class="{'active':searchForm.state==5}">待确认评价</el-button>
+					<el-button size="mini" @click='searchStateData(5)' :class="{'active':searchForm.state==5}">待确认评价
+					</el-button>
 				</el-badge>
 				<el-badge :value="ywc" type="success" class="item">
-					<el-button size="mini" @click='searchStateData(6)' :class="{'active':searchForm.state==6}">已完成</el-button>
+					<el-button size="mini" @click='searchStateData(6)' :class="{'active':searchForm.state==6}">已完成
+					</el-button>
 				</el-badge>
 				<el-badge :value="yqx" type="danger" class="item">
-					<el-button size="mini" @click='searchStateData(7)' :class="{'active':searchForm.state==7}">已取消</el-button>
+					<el-button size="mini" @click='searchStateData(7)' :class="{'active':searchForm.state==7}">已取消
+					</el-button>
 				</el-badge>
 				<el-badge :value="error" type="warning">
-					<el-button size="mini" @click='searchStateData(8)' :class="{'active':searchForm.state==8}">异常</el-button>
+					<el-button size="mini" @click='searchStateData(8)' :class="{'active':searchForm.state==8}">异常
+					</el-button>
 				</el-badge>
 			</div>
 		</el-col>
 
 		<!--列表-->
-		<el-table border :data="tableData" v-loading="listLoading" id="exportTable" style="width: 100%" :header-cell-style="{background:'#fafafa'}"
-		 ref="table">
+		<el-table border :data="tableData" v-loading="listLoading" id="exportTable" style="width: 100%"
+			:header-cell-style="{background:'#fafafa'}" ref="table">
 			<el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
 			<el-table-column prop="OrderNumbers" label="任务编号" align="center" width="160">
 				<template slot-scope="scope">
-					<el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">{{scope.row.OrderNumbers}}</el-link>
+					<el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">
+						{{scope.row.OrderNumbers}}
+					</el-link>
+				</template>
+			</el-table-column>
+			<el-table-column prop="OrderProductPictures" label="产品图" align="center">
+				<template slot-scope="scope">
+					<el-image style="width: 40px;height: 40px;" v-if="scope.row.OrderProductPictures"
+						:src="'/'+scope.row.OrderProductPictures">
+					</el-image>
 				</template>
 			</el-table-column>
 			<el-table-column prop="ServiceType" label="任务类型" align="center" width="110">
@@ -81,13 +106,16 @@
 				</template>
 			</el-table-column>
 			<el-table-column prop="countryName" label="国家" align="center"></el-table-column>
-			<el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'></el-table-column>
-			<el-table-column prop="OrderShopName" label="店铺" align="center" :show-overflow-tooltip='true'></el-table-column>
+			<el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'>
+			</el-table-column>
+			<el-table-column prop="OrderShopName" label="店铺" align="center" :show-overflow-tooltip='true'>
+			</el-table-column>
 			<el-table-column prop="Asin" label="ASIN" align="center" width="110"></el-table-column>
 			<el-table-column prop="AmazonNumber" label="购买单号" align="center"></el-table-column>
 			<el-table-column prop="AmazonProductPrice" label="购买价格" align="center"></el-table-column>
-			<el-table-column prop="BuyTime" label="购买时间" align="center" width="160"></el-table-column>
+			<el-table-column prop="BuyTime" label="购买时间" align="center" width="100"></el-table-column>
 			<el-table-column prop="PayAccount" label="返款账号" align="center"></el-table-column>
+			<el-table-column prop="DealTime" label="返款时间" align="center" width="100"></el-table-column>
 			<el-table-column prop="TaskState" label="状态" align="center">
 				<template slot-scope="scope">
 					<span v-if="scope.row.TaskState==1">待分配</span>
@@ -102,10 +130,14 @@
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="145">
 				<template slot-scope="scope">
-					<el-button size="small" v-if="scope.row.TaskState==1" type="danger" @click="cancelHandel(scope.$index,scope.row)">取消</el-button>
-					<el-button size="small" type="primary" v-if="scope.row.TaskState==3" @click="confirmBtn(scope.$index,scope.row)">确认订单</el-button>
-					<el-button size="small" v-if="scope.row.TaskState==5" type="success" @click="evalEdit(scope.$index,scope.row,1)">确认评价</el-button>
-					<el-button size="small" v-if="scope.row.TaskState==6 && scope.row.ServiceType=='2'" type="success" @click="evalEdit(scope.$index,scope.row,2)">补充返款信息</el-button>
+					<el-button size="small" v-if="scope.row.TaskState==1" type="danger"
+						@click="cancelHandel(scope.$index,scope.row)">取消</el-button>
+					<el-button size="small" v-if="scope.row.TaskState==3" type="primary"
+						@click="confirmBtn(scope.$index,scope.row)">确认订单</el-button>
+					<el-button size="small" v-if="scope.row.TaskState==5" type="success"
+						@click="evalEdit(scope.$index,scope.row,1)">确认评价</el-button>
+					<el-button size="small" v-if="scope.row.TaskState==6 && scope.row.ServiceType=='2'" type="success"
+						@click="evalEdit(scope.$index,scope.row,2)">补充返款信息</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -113,47 +145,46 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-			 :current-page="pageIndex" :page-sizes="[10, 20, 50, 100, 1000]" :page-size="10" layout="total, sizes, prev, pager, next, jumper"
-			 :total="total">
+				:current-page="pageIndex" :page-sizes="[10, 20, 50, 100, 1000]" :page-size="10"
+				layout="total, sizes, prev, pager, next, jumper" :total="total">
 			</el-pagination>
 		</el-col>
 
 		<!-- 任务查看 -->
-		<el-dialog width="70%" :title="title" :visible.sync="viewModal" :close-on-click-modal="false">
+		<el-dialog width="70%" :append-to-body="true" :title="title" :visible.sync="viewModal"
+			:close-on-click-modal="false">
 			<el-card class="box-card">
 				<div slot="header" class="clearfix">
-					<span>产品信息</span>
+					<span>任务信息</span>
 				</div>
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
 						<el-col :span="12">
-							<el-form-item label='订单编码：' prop="OrderNumbers">
-								<span>{{viewTaskData.OrderNumber}}</span>
+							<el-form-item label='任务编码：' prop="OrderNumbers">
+								<span>{{viewTaskData.OrderNumbers}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='下单类型：' prop="ServiceType">
+							<el-form-item label='任务类型：' prop="ServiceType">
 								<span v-if="viewTaskData.ServiceType==1">评后返（代返）</span>
 								<span v-if="viewTaskData.ServiceType==2">评后返（自返）</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='国家：' prop="CountryName">
-								<span>{{viewTaskData.CountryName}}</span>
+							<el-form-item label='国家：' prop="countryName">
+								<span>{{viewTaskData.countryName}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='订单状态：' prop="OrderState">
-								<span v-if="viewTaskData.OrderState==1">待确认</span>
-								<span v-if="viewTaskData.OrderState==2">待分配</span>
-								<span v-if="viewTaskData.OrderState==3">已分配</span>
-								<span v-if="viewTaskData.OrderState==4">已完成</span>
-								<span v-if="viewTaskData.OrderState==5">已取消</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='店铺名称：' prop="ShopName">
-								<span>{{viewTaskData.ShopName}}</span>
+							<el-form-item label='任务状态：' prop="TaskState">
+								<span v-if="viewTaskData.TaskState==1">待分配</span>
+								<span v-if="viewTaskData.TaskState==2" class="warning">待购买</span>
+								<span v-if="viewTaskData.TaskState==3" class="primary">待确认出单</span>
+								<span v-if="viewTaskData.TaskState==4" class="warning">待评价</span>
+								<span v-if="viewTaskData.TaskState==5" class="primary">待确认评价</span>
+								<span v-if="viewTaskData.TaskState==6" class="success">已完成</span>
+								<span v-if="viewTaskData.TaskState==7" class="danger">已取消</span>
+								<span v-if="viewTaskData.TaskState==8" class="warning">异常</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
@@ -167,23 +198,25 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='产品单价：' prop="ProductPrice">
-								<span>{{viewTaskData.Currency}}{{viewTaskData.ProductPrice}}</span>
+							<el-form-item label='产品评分：' prop="OrderProductScore">
+								<el-rate style="margin-top: 10px;" v-model="viewTaskData.OrderProductScore" disabled
+									show-score text-color="#ff9900"></el-rate>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12" v-if="viewTaskData.ServiceType == '2'">
+							<el-form-item label='预计价格：' prop="ProductPrice">
+								<span
+									v-show="viewTaskData.ProductPrice!=null"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='产品链接：' prop="ProductLink">
-								<a :href="viewTaskData.ProductLink">{{viewTaskData.ProductLink}}</a>
+							<el-form-item label='任务执行时间：' prop="ExecutionTime">
+								<span>{{viewTaskData.ExecutionTime}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品评分：' prop="ProductScore">
-								<el-rate style="margin-top: 10px;" v-model="viewTaskData.ProductScore" disabled show-score text-color="#ff9900"></el-rate>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品图片：' prop="ProductPictures">
-								<img v-show="viewTaskData.ProductPictures" :src="'/'+viewTaskData.ProductPictures" class="eval_img">
+						<el-col :span="24">
+							<el-form-item label='备注：' prop="Remarks">
+								<span>{{viewTaskData.Remarks}}</span>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -191,72 +224,117 @@
 			</el-card>
 			<el-card class="box-card mt20">
 				<div slot="header" class="clearfix">
-					<span>下单信息</span>
+					<span>购买信息</span>
 				</div>
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
 						<el-col :span="12">
-							<el-form-item label='关键词类型：' prop="KeywordType">
-								<span v-if="viewTaskData.KeywordType==1">产品关键词</span>
-								<span v-if="viewTaskData.KeywordType==2">CPC关键词</span>
+							<el-form-item label='购买单号：' prop="AmazonNumber">
+								<span>{{viewTaskData.AmazonNumber}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='关键词：' prop="ProductKeyword">
-								<span>{{viewTaskData.ProductKeyword}}</span>
+							<el-form-item label='购买时间：' prop="BuyTime">
+								<span>{{viewTaskData.BuyTime}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='任务数量：' prop="Number">
-								<span>{{viewTaskData.Number}}</span>
+							<el-form-item label='购买价格：' prop="AmazonProductPrice">
+								<span
+									v-show="viewTaskData.AmazonProductPrice!=null"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.AmazonProductPrice}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
+							<el-form-item label='产品运费：' prop="Freight">
+								<span v-show="viewTaskData.Freight!=null"><span>{{viewTaskData.symbol}}</span>
+									{{viewTaskData.Freight}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
+							<el-form-item label='产品税费：' prop="Taxation">
+								<span v-show="viewTaskData.Taxation!=null"><span>{{viewTaskData.symbol}}</span>
+									{{viewTaskData.Taxation}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
+							<el-form-item label='其他费用：' prop="Other">
+								<span v-show="viewTaskData.Other!=null">{{viewTaskData.symbol}}</span>
+								{{viewTaskData.Other}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
+							<el-form-item label='增值费：' prop="OrderAddedFee">
+								<span>{{viewTaskData.OrderAddedFee}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='留评率：' prop="ProductPosition">
-								<span>{{viewTaskData.ProductPosition}}</span>
+							<el-form-item label='服务费：' prop="OrderUnitPriceSerCharge">
+								<span>{{viewTaskData.OrderUnitPriceSerCharge}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='任务开始时间：' prop="StartTimes">
-								<span>{{viewTaskData.StartTimes}}</span>
+						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
+							<el-form-item label='汇率：' prop="OrderExchangeRate">
+								<span>{{viewTaskData.OrderExchangeRate}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='任务结束时间：' prop="EndTimes">
-								<span>{{viewTaskData.EndTimes}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='汇率：' prop="ExchangeRate">
-								<span>{{viewTaskData.ExchangeRate}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品总价：' prop="TotalProductPrice">
-								<span>{{viewTaskData.TotalProductPrice}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='服务费单价：' prop="UnitPriceSerCharge">
-								<span>{{viewTaskData.UnitPriceSerCharge}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='增值费单价：' prop="AddedFee">
-								<span>{{viewTaskData.AddedFee}}</span>
+						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
+							<el-form-item label='总额：' prop="Total">
+								<span style="color: red;" v-show="viewTaskData.Total"><span>￥</span>
+									{{viewTaskData.Total}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="24">
-							<el-form-item label='合计：' prop="Total">
-								<span style="color: red;">{{viewTaskData.Total}}</span>
-								<span style="margin-left: 15px;"> {{viewTaskData.TotalProductPrice}} (产品总价) +
-									{{viewTaskData.UnitPriceSerCharge}}(服务费单价) * {{viewTaskData.Number}} (任务数量) + {{viewTaskData.AddedFee}}
-									(增值费单价) * {{viewTaskData.Number}}(任务数量)</span>
+							<el-form-item label='购买截图：' prop="BuyImage">
+								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.BuyImage"
+									:src="viewTaskData.BuyImage"
+									:preview-src-list="(viewTaskData.BuyImage || '').split(',')"></el-image>
+							</el-form-item>
+						</el-col>
+					</el-row>
+				</el-form>
+			</el-card>
+			<el-card class="box-card mt20">
+				<div slot="header" class="clearfix">
+					<span>评价信息</span>
+				</div>
+				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
+					<el-row>
+						<el-col :span="24">
+							<el-form-item label='返款账号：' prop="PayAccount">
+								<span>{{viewTaskData.PayAccount}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="24">
-							<el-form-item label='下单备注：' prop="Remarks">
-								<span>{{viewTaskData.Remarks}}</span>
+							<el-form-item label='评价链接：' prop="ProductLink">
+								<a :href="viewTaskData.ProductLink">{{viewTaskData.ProductLink}}</a>
+							</el-form-item>
+						</el-col>
+						<el-col :span="24">
+							<el-form-item label='评价截图：' prop="Remarks">
+								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.ProductImage"
+									:src="viewTaskData.ProductImage"
+									:preview-src-list="(viewTaskData.ProductImage || '').split(',')"></el-image>
+							</el-form-item>
+						</el-col>
+					</el-row>
+				</el-form>
+			</el-card>
+			<el-card class="box-card mt20">
+				<div slot="header" class="clearfix">
+					<span>交易信息</span>
+				</div>
+				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
+					<el-row>
+						<el-col :span="24">
+							<el-form-item label='返款金额：' prop="DealMoeny">
+								<span>{{viewTaskData.DealMoeny}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="24">
+							<el-form-item label='交易截图：' prop="Remarks">
+								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.DealIamge"
+									:src="viewTaskData.DealIamge"
+									:preview-src-list="(viewTaskData.DealIamge || '').split(',')"></el-image>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -271,8 +349,7 @@
 </template>
 
 <script>
-	import FileSaver from 'file-saver'
-	import XLSX from 'xlsx'
+	import table2excel from 'js-table2excel'
 
 	import {
 		taskList,
@@ -298,10 +375,11 @@
 				rateData: [], //汇率数据
 				searchForm: {
 					searchWords: '',
-					state: '',
-					country: 0,
+					state: 0,
 					type: 0,
-					time: []
+					country: [],
+					time: [],
+					time2: []
 				},
 				all: 0, //全部
 				dfp: 0, //待分配
@@ -327,21 +405,30 @@
 			getAllData() {
 				let _this = this
 				_this.listLoading = true
-				let time = _this.searchForm.time
+				let buyTime = _this.searchForm.time
 				let time1 = ''
 				let time2 = ''
-				if (time != '' && time != null) {
+				if (buyTime != '' && buyTime != null) {
 					time1 = time[0]
 					time2 = time[1]
+				}
+				let backTime = _this.searchForm.time2
+				let time3 = ''
+				let time4 = ''
+				if (backTime != '' && backTime != null) {
+					time3 = time[0]
+					time4 = time[1]
 				}
 				let params = {
 					userId: sessionStorage.getItem('userId'),
 					kWord: _this.searchForm.searchWords,
 					state: _this.searchForm.state,
-					countryIdx: _this.searchForm.country,
-					// statetime: time1,
-					// endtime: time2,
 					type: _this.searchForm.type,
+					countryIdx: _this.searchForm.country,
+					statetime: time1,
+					endtime: time2,
+					// backstatetime: time3,
+					// backendtime: time4,
 					pageNum: _this.pageIndex,
 					pagesize: _this.pageSize
 				}
@@ -366,9 +453,9 @@
 					userId: sessionStorage.getItem('userId'),
 					kWord: _this.searchForm.searchWords,
 					countryIdx: _this.searchForm.country,
-					type: _this.searchForm.type
-					// statetime: time1,
-					// endtime: time2
+					type: _this.searchForm.type,
+					statetime: time1,
+					endtime: time2
 				}
 				taskStateNum(params).then(res => {
 					_this.all = Number(res.list[0].TotalCount) //全部
@@ -407,6 +494,8 @@
 				let _this = this
 				_this.title = '任务【' + row.OrderNumbers + '】详情'
 				_this.viewTaskData = Object.assign({}, row)
+				_this.viewTaskData.BuyImage = this.$IMGURL + row.BuyImage
+				_this.viewTaskData.ProductImage = this.$IMGURL + row.ProductImage
 				_this.viewModal = true //获取到数据后显示模态框
 			},
 
@@ -476,12 +565,13 @@
 			resetSearch() {
 				let _this = this
 				_this.searchForm.searchWords = ''
-				_this.searchForm.country = 0
 				_this.searchForm.type = 0
+				_this.searchForm.country = []
 				_this.searchForm.time = []
+				_this.searchForm.time2 = []
 				_this.pageIndex = 1
 				_this.getAllData()
-				_this.getOrderStateNum()
+				_this.getTaskStateNum()
 			},
 
 			//翻页
@@ -496,27 +586,135 @@
 				_this.getAllData()
 			},
 
-			// 导出
+			//导出
 			exportExcel() {
-				var xlsxParam = {
-					raw: true
-				}
-				var wb = XLSX.utils.table_to_book(document.querySelector('#exportTable'), xlsxParam)
-				var wbout = XLSX.write(wb, {
-					bookType: 'xlsx',
-					bookSST: true,
-					type: 'array'
-				})
-				try {
-					FileSaver.saveAs(new Blob([wbout], {
-						type: 'application/octet-stream'
-					}), '任务数据.xlsx')
-				} catch (e) {
-					if (typeof console !== 'undefined') {
-						console.log(e, wbout)
+				const column = [{
+						title: '任务编号',
+						key: 'OrderNumbers',
+						type: 'text'
+					},
+					{
+						title: '产品图',
+						key: 'ExpProductImg',
+						type: 'image',
+						width: 100,
+						height: 100
+					},
+					{
+						title: '任务类型',
+						key: 'ExpServiceType',
+						type: 'text'
+					},
+					{
+						title: '国家',
+						key: 'countryName',
+						type: 'text'
+					},
+					{
+						title: '产品名称',
+						key: 'ProductName',
+						type: 'text'
+					},
+					{
+						title: '店铺',
+						key: 'OrderShopName',
+						type: 'text'
+					},
+					{
+						title: 'ASIN',
+						key: 'Asin',
+						type: 'text'
+					},
+					{
+						title: '购买单号',
+						key: 'AmazonNumber',
+						type: 'text'
+					},
+					{
+						title: '购买价格',
+						key: 'AmazonProductPrice',
+						type: 'text'
+					},
+					{
+						title: '购买时间',
+						key: 'BuyTime',
+						type: 'text'
+					},
+					{
+						title: '返款账号',
+						key: 'PayAccount',
+						type: 'text'
+					},
+					{
+						title: '返款时间',
+						key: 'DealTime',
+						type: 'text'
+					},
+					{
+						title: '状态',
+						key: 'ExpTaskState',
+						type: 'text'
+					},
+				]
+
+				// 1.title为列名
+				// 2.key为data数据每个对象对应的key
+				// 3.若为图片格式, 需要加type为image的说明,并且可以设置图片的宽高
+				const data = this.tableData
+				// data数据一些特殊处理
+				for (const t in data) {
+					data[t].ExpProductImg = this.$IMG_URL + data[t].OrderProductPictures
+
+					if (data[t].DealIamge) {
+						data[t].ExpDealIamge = this.$IMG_URL + data[t].DealIamge
+					} else {
+						data[t].ExpDealIamge = ''
 					}
+
+					let TxtServiceType = ''
+					if (data[t].ServiceType == 1) {
+						TxtServiceType = '评后返（代返）'
+					}
+					if (data[t].ServiceType == 2) {
+						TxtServiceType = '评后返（自返）'
+					}
+					data[t].ExpServiceType = TxtServiceType
+
+					let TxtTaskState = ''
+					if (data[t].TaskState == 1) {
+						TxtTaskState = '待分配'
+					}
+					if (data[t].TaskState == 2) {
+						TxtTaskState = '待购买'
+					}
+					if (data[t].TaskState == 3) {
+						TxtTaskState = '待确认出单'
+					}
+					if (data[t].TaskState == 4) {
+						TxtTaskState = '待评价'
+					}
+					if (data[t].TaskState == 5) {
+						TxtTaskState = '待确认评价'
+					}
+					if (data[t].TaskState == 6) {
+						TxtTaskState = '已完成'
+					}
+					if (data[t].TaskState == 7) {
+						TxtTaskState = '已取消'
+					}
+					if (data[t].TaskState == 8) {
+						TxtTaskState = '异常'
+					}
+					data[t].ExpTaskState = TxtTaskState
 				}
-				return wbout
+				let date = new Date()
+				let year = date.getFullYear()
+				let month = date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1
+				let day = date.getDate() <= 9 ? "0" + date.getDate() : date.getDate()
+				let time = year + '-' + month + '-' + day
+
+				const excelName = '任务数据' + '_' + time + '.xls'
+				table2excel(column, data, excelName)
 			}
 		}
 	}

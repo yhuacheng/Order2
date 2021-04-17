@@ -35,17 +35,20 @@
 					</el-col>
 					<el-col :md="3" :xs="12">
 						<el-card shadow="hover" class="item">
-							<el-button class="btn" plain type="primary" size="mini" @click="$router.push('/order')">下单</el-button>
+							<el-button class="btn" plain type="primary" size="mini" @click="$router.push('/order')">下单
+							</el-button>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
 						<el-card shadow="hover" class="item">
-							<el-button class="btn" plain type="danger" size="mini" @click="$router.push('/takeMoney')">提现</el-button>
+							<el-button class="btn" plain type="danger" size="mini" @click="$router.push('/takeMoney')">
+								提现</el-button>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
 						<el-card shadow="hover" class="item">
-							<el-button class="btn" plain type="warning" size="mini" @click="$router.push('/moneyDetails')">账单</el-button>
+							<el-button class="btn" plain type="warning" size="mini"
+								@click="$router.push('/moneyDetails')">账单</el-button>
 						</el-card>
 					</el-col>
 				</el-row>
@@ -56,7 +59,7 @@
 			<el-col :md="18">
 				<el-card class="mt30">
 					<div slot="header">
-						<span>公告</span>
+						<span>系统公告</span>
 					</div>
 					<div v-html="notice"></div>
 				</el-card>
@@ -69,7 +72,7 @@
 					<div class="tab-title">汇率</div>
 					<el-table :data="rateData" border style="width: 100%">
 						<el-table-column prop="CurrencyName" label="币种" align="center"></el-table-column>
-						<el-table-column prop="CurrencySymbol" label="单位" align="center"></el-table-column>
+						<el-table-column prop="CurrencySymbol" label="符号" align="center"></el-table-column>
 						<el-table-column prop="ExchangeRate" label="汇率" align="center"></el-table-column>
 					</el-table>
 					<div class="tab-title mt20">服务费</div>
@@ -167,8 +170,21 @@
 			getRateData() {
 				let _this = this
 				rateList().then((res) => {
-					_this.rateData = res.list
+					let data = res.list
+					let unData = _this.unique(data, 'CurrencyName')
+					_this.rateData = unData
 				}).catch(err => {})
+			},
+
+			//去重方法
+			unique(arr, u_key) {
+				let map = new Map()
+				arr.forEach((item, index) => {
+					if (!map.has(item[u_key])) {
+						map.set(item[u_key], item)
+					}
+				})
+				return [...map.values()]
 			},
 
 			//获取服务费数据

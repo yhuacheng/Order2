@@ -37,7 +37,7 @@ export const addFeeList = (params) => get('/api/IncrementServiceFee/IncrementSer
 
 export const payMent = (params) => get('/api/Order/GetPayment', params) //支付方式
 
-export const takeMoneyList = (params) => get('/api/DrawMoney/GetUserByWithdrawal', params) //提现列表
+export const takeMoneyList = (params) => get('/api/DrawMoney/GetUserWithdrawal', params) //提现列表
 export const takeMoneyAdd = (params) => post('/api/DrawMoney/UserWithdrawal', params) //提现新增
 
-export const moneyList = (params) => get('/api/AroundUserFinanceLog/GetPay', params) //我的账单
+export const moneyList = (params) => get('/api/CustomerFinance/GetCustomerFinance', params) //我的账单

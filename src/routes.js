@@ -12,19 +12,19 @@ export default new Router({
 	// mode: 'history',
 	routes: [{
 			path: '/',
-			redirect: '/index',
-			name: '',
-			hidden: true
-		},
-		{
-			path: '/index',
-			component: () => import('./views/Index.vue'),
+			redirect: '/login',
 			name: '',
 			hidden: true
 		},
 		{
 			path: '/login',
 			component: () => import('./views/Login.vue'),
+			name: '',
+			hidden: true
+		},
+		{
+			path: '/404',
+			component: () => import('./views/404.vue'),
 			name: '',
 			hidden: true
 		},
@@ -41,20 +41,15 @@ export default new Router({
 			}]
 		},
 		{
-			path: '/404',
-			component: () => import('./views/404.vue'),
-			name: '',
-			hidden: true
-		},
-		{
 			path: '/',
 			component: () => import('./views/Home.vue'),
-			name: '系统首页',
+			name: '欢迎',
 			iconCls: 'el-icon-monitor',
+			leaf: true,
 			children: [{
 				path: '/main',
 				component: () => import('./views/Main.vue'),
-				name: '我的主页'
+				name: '系统首页'
 			}]
 		},
 		{
@@ -62,6 +57,7 @@ export default new Router({
 			component: () => import('./views/Home.vue'),
 			name: '订单管理',
 			iconCls: 'el-icon-document-checked',
+			leaf: true,
 			children: [{
 				path: '/order',
 				component: () => import('./views/orderManage/order.vue'),
@@ -73,6 +69,7 @@ export default new Router({
 			component: () => import('./views/Home.vue'),
 			name: '任务管理',
 			iconCls: 'el-icon-document',
+			leaf: true,
 			children: [{
 				path: '/task',
 				component: () => import('./views/taskManage/task.vue'),
