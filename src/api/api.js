@@ -26,6 +26,8 @@ export const orderState = (params) => post('/api/Order/ChangeOrderState', params
 
 export const taskList = (params) => post('/api/Task/GetMyTaskList', params) //任务管理
 export const taskStateNum = (params) => post('/api/Task/MyTaskStates', params) //任务管理状态
+export const taskConfirmOrder = (params) => post('/api/Task/ConfirmTaskThree', params) //任务确认订单
+export const taskConfirmComment = (params) => post('/api/Task/ConfirmTaskFiveOrSeven', params) //任务确认评价
 
 export const countryList = (params) => get('/api/Country/GetCountry', params) //国家
 

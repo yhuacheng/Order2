@@ -17,26 +17,26 @@ axios.interceptors.request.use(
 	config => {
 		// 如果有token则在请求时携带token
 		if (sessionStorage.getItem('token')) {
-			config.headers.common["token"] = sessionStorage.getItem('token');
+			config.headers.common["auth"] = sessionStorage.getItem('token');
 		}
 		return config;
 	},
 	error => {
-		return Promise.reject(error);
-	});
+		return Promise.reject(error)
+	})
 
 // response响应拦截器
 axios.interceptors.response.use(
 	response => {
 		let data = response.data
-		if (data.Code != 'no') {
-			if (data.Msg) {
-				Message.success(data.Msg) //如果有成功提示信息，则展示成功提示信息
+		if (data.IsSuccess != false) {
+			if (data.Message) {
+				Message.success(data.Message) //如果有成功提示信息，则展示成功提示信息
 			}
 			return Promise.resolve(response)
 		} else {
-			if (data.Msg) {
-				Message.error(data.Msg) //如果有错误提示信息，则展示错误提示信息
+			if (data.Message) {
+				Message.error(data.Message) //如果有错误提示信息，则展示错误提示信息
 			}
 			return Promise.reject(response)
 		}
@@ -63,25 +63,25 @@ export function get(url, params) {
 			.catch(err => {
 				reject(err.data)
 			})
-	})
+	});
 }
 
 /** 
  * post方法封装，对应post请求 
  * @param {String} url [请求的url地址] 
- * @param {Object} params [请求时携带的参数]
+ * @param {Object} params [请求时携带的参数] 
  */
 export function post(url, params) {
 	return new Promise((resolve, reject) => {
-		// axios.post(url, qs.stringify(params))
+		// axios.post(url, qs.stringify(params)) //转换formDtata格式
 		axios.post(url, params)
 			.then(res => {
-				resolve(res.data)
+				resolve(res.data);
 			})
 			.catch(err => {
 				reject(err.data)
 			})
-	})
+	});
 }
 
 /** 
@@ -103,5 +103,5 @@ export function postForm(url, params) {
 			.catch(err => {
 				reject(err.data)
 			})
-	})
+	});
 }

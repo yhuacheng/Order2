@@ -90,6 +90,11 @@
 					<el-link type="primary" :underline="false" @click.stop="viewModalShow(scope.$index,scope.row)">
 						{{scope.row.OrderNumbers}}
 					</el-link>
+					<div>
+						<span v-if="scope.row.NoComment">
+							<span class="danger fz10"> {{scope.row.ServiceName}}</span>
+						</span>
+					</div>
 				</template>
 			</el-table-column>
 			<el-table-column prop="OrderProductPictures" label="产品图" align="center">
@@ -129,16 +134,27 @@
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="145">
-				<template slot-scope="scope">
+				<!-- <template slot-scope="scope">
 					<el-button size="small" v-if="scope.row.TaskState==1" type="danger"
 						@click="cancelHandel(scope.$index,scope.row)">取消</el-button>
 					<el-button size="small" v-if="scope.row.TaskState==3" type="primary"
-						@click="confirmBtn(scope.$index,scope.row)">确认订单</el-button>
+						@click="confirmOrder(scope.$index,scope.row)">确认订单</el-button>
 					<el-button size="small" v-if="scope.row.TaskState==5" type="success"
 						@click="evalEdit(scope.$index,scope.row,1)">确认评价</el-button>
 					<el-button size="small" v-if="scope.row.TaskState==6 && scope.row.ServiceType=='2'" type="success"
 						@click="evalEdit(scope.$index,scope.row,2)">补充返款信息</el-button>
+				</template> -->
+
+				<template slot-scope="scope">
+					<el-button size="small" type="danger" @click="cancelHandel(scope.$index,scope.row)">取消</el-button>
+					<el-button size="small" type="primary" @click="confirmOrder(scope.$index,scope.row)">确认订单
+					</el-button>
+					<el-button size="small" type="success" @click="confirmComment(scope.$index,scope.row,1)">确认评价
+					</el-button>
+					<el-button size="small" type="success" @click="confirmComment(scope.$index,scope.row,2)">补充返款信息
+					</el-button>
 				</template>
+
 			</el-table-column>
 		</el-table>
 
@@ -160,7 +176,7 @@
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
 						<el-col :span="12">
-							<el-form-item label='任务编码：' prop="OrderNumbers">
+							<el-form-item label='任务编码：'>
 								<span>{{viewTaskData.OrderNumbers}}</span>
 							</el-form-item>
 						</el-col>
@@ -171,12 +187,12 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='国家：' prop="countryName">
+							<el-form-item label='国家：'>
 								<span>{{viewTaskData.countryName}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='任务状态：' prop="TaskState">
+							<el-form-item label='任务状态：'>
 								<span v-if="viewTaskData.TaskState==1">待分配</span>
 								<span v-if="viewTaskData.TaskState==2" class="warning">待购买</span>
 								<span v-if="viewTaskData.TaskState==3" class="primary">待确认出单</span>
@@ -188,34 +204,34 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='产品ASIN：' prop="Asin">
+							<el-form-item label='产品ASIN：'>
 								<span>{{viewTaskData.Asin}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='产品名称：' prop="ProductName">
+							<el-form-item label='产品名称：'>
 								<span>{{viewTaskData.ProductName}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='产品评分：' prop="OrderProductScore">
+							<el-form-item label='产品评分：'>
 								<el-rate style="margin-top: 10px;" v-model="viewTaskData.OrderProductScore" disabled
 									show-score text-color="#ff9900"></el-rate>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12" v-if="viewTaskData.ServiceType == '2'">
-							<el-form-item label='预计价格：' prop="ProductPrice">
+							<el-form-item label='预计价格：'>
 								<span
 									v-show="viewTaskData.ProductPrice!=null"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='任务执行时间：' prop="ExecutionTime">
+							<el-form-item label='任务执行时间：'>
 								<span>{{viewTaskData.ExecutionTime}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="24">
-							<el-form-item label='备注：' prop="Remarks">
+							<el-form-item label='备注：'>
 								<span>{{viewTaskData.Remarks}}</span>
 							</el-form-item>
 						</el-col>
@@ -229,56 +245,57 @@
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
 						<el-col :span="12">
-							<el-form-item label='购买单号：' prop="AmazonNumber">
+							<el-form-item label='购买单号：'>
 								<span>{{viewTaskData.AmazonNumber}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='购买时间：' prop="BuyTime">
+							<el-form-item label='购买时间：'>
 								<span>{{viewTaskData.BuyTime}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='购买价格：' prop="AmazonProductPrice">
-								<span
-									v-show="viewTaskData.AmazonProductPrice!=null"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.AmazonProductPrice}}</span>
+							<el-form-item label='购买价格：'>
+								<span v-show="viewTaskData.AmazonProductPrice">
+									<span>{{viewTaskData.symbol}}</span>
+									{{viewTaskData.AmazonProductPrice}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
-							<el-form-item label='产品运费：' prop="Freight">
-								<span v-show="viewTaskData.Freight!=null"><span>{{viewTaskData.symbol}}</span>
+						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+							<el-form-item label='产品运费：'>
+								<span v-show="viewTaskData.Freight"><span>{{viewTaskData.symbol}}</span>
 									{{viewTaskData.Freight}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
-							<el-form-item label='产品税费：' prop="Taxation">
-								<span v-show="viewTaskData.Taxation!=null"><span>{{viewTaskData.symbol}}</span>
+						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+							<el-form-item label='产品税费：'>
+								<span v-show="viewTaskData.Taxation"><span>{{viewTaskData.symbol}}</span>
 									{{viewTaskData.Taxation}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
-							<el-form-item label='其他费用：' prop="Other">
-								<span v-show="viewTaskData.Other!=null">{{viewTaskData.symbol}}</span>
+						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+							<el-form-item label='其他费用：'>
+								<span v-show="viewTaskData.Other">{{viewTaskData.symbol}}</span>
 								{{viewTaskData.Other}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
-							<el-form-item label='增值费：' prop="OrderAddedFee">
+						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+							<el-form-item label='增值费：'>
 								<span>{{viewTaskData.OrderAddedFee}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label='服务费：' prop="OrderUnitPriceSerCharge">
+							<el-form-item label='服务费：'>
 								<span>{{viewTaskData.OrderUnitPriceSerCharge}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
-							<el-form-item label='汇率：' prop="OrderExchangeRate">
+						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+							<el-form-item label='汇率：'>
 								<span>{{viewTaskData.OrderExchangeRate}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType === '评后返（代返）'">
-							<el-form-item label='总额：' prop="Total">
+						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+							<el-form-item label='总额：'>
 								<span style="color: red;" v-show="viewTaskData.Total"><span>￥</span>
 									{{viewTaskData.Total}}</span>
 							</el-form-item>
@@ -321,18 +338,18 @@
 			</el-card>
 			<el-card class="box-card mt20">
 				<div slot="header" class="clearfix">
-					<span>交易信息</span>
+					<span>返款信息</span>
 				</div>
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
 						<el-col :span="24">
-							<el-form-item label='返款金额：' prop="DealMoeny">
+							<el-form-item label='返款金额：'>
 								<span>{{viewTaskData.DealMoeny}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="24">
-							<el-form-item label='交易截图：' prop="Remarks">
-								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.DealIamge"
+							<el-form-item label='返款截图：'>
+								<el-image style="width: 100px;height: 100px;" v-if="viewTaskData.DealIamge"
 									:src="viewTaskData.DealIamge"
 									:preview-src-list="(viewTaskData.DealIamge || '').split(',')"></el-image>
 							</el-form-item>
@@ -345,6 +362,80 @@
 			</div>
 		</el-dialog>
 
+		<!-- 确认订单 -->
+		<el-dialog title="确认订单" :visible.sync="orderModal" :close-on-click-modal="false" :before-close="closeOrderModal"
+			width="30%">
+			<el-form :model="orderForm" :rules="orderRules" ref="orderForm">
+				<el-form-item label="订单状态：">
+					<el-radio-group v-model="orderForm.orderStatus" @change="orderStateChange">
+						<el-radio label="1">正常</el-radio>
+						<el-radio label="0">异常</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="购买截图：">
+					<el-image v-if="orderForm.buyImage" style="width: 100px;height: 100px;"
+						:src="$IMG_URL_BACK + orderForm.buyImage"
+						:preview-src-list="($IMG_URL_BACK + orderForm.buyImage || '').split(',')"></el-image>
+				</el-form-item>
+				<el-form-item label="购买单号：">
+					<span>{{orderForm.buyNumber}}</span>
+				</el-form-item>
+				<el-form-item label="购买时间：">
+					<span>{{orderForm.buyTime}}</span>
+				</el-form-item>
+				<el-form-item label="购买价格：" prop="buyMoney">
+					<el-input v-model="orderForm.buyMoney" :disabled="orderForm.orderStatus=='0'"></el-input>
+				</el-form-item>
+				<el-form-item label="备注：" prop="remark" v-if="orderForm.orderStatus=='1'">
+					<el-input type="textarea" rows="3" v-model="orderForm.remark"></el-input>
+				</el-form-item>
+				<el-form-item label="异常备注：" prop="orderRemark" v-if="orderForm.orderStatus=='0'">
+					<el-input type="textarea" rows="3" v-model="orderForm.orderRemark"></el-input>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="closeOrderModal">关闭</el-button>
+				<el-button type="primary" @click='confirmOrderSubmit' :loading="btnLoading">确认</el-button>
+			</span>
+		</el-dialog>
+
+		<!--确认评价-->
+		<el-dialog :title="commentTitle" :visible.sync="commentModel" :close-on-click-modal="false"
+			:before-close="closeCommentModel" width="30%">
+			<el-form :model="commentForm" :rules="commentRules" ref="commentForm">
+				<el-form-item label="返款账号：" v-if="serviceType==2">
+					<span>{{commentForm.PPaccount}}</span>
+				</el-form-item>
+				<el-form-item label="评价链接：">
+					<span>{{commentForm.productLink}}</span>
+				</el-form-item>
+				<el-form-item label="评价截图：">
+					<el-image v-if="commentForm.ProductImage" style="width: 100px;height: 100px;"
+						:src="$IMG_URL_BACK + commentForm.ProductImage"
+						:preview-src-list="($IMG_URL_BACK + commentForm.ProductImage || '').split(',')"></el-image>
+				</el-form-item>
+				<div v-if="serviceType==2">
+					<el-form-item label='返款截图：' class="mt20 p-img">
+						<el-upload class="avatar-uploader" name="image" :action="uploadUrl" :show-file-list="false"
+							:on-success="handleAvatarSuccess" :on-error="handleError"
+							:before-upload="beforeAvatarUpload" accept="image/jpeg,image/png,image/gif,image/bmp">
+							<img v-if="imageUrl" :src="imageUrl" class="avatar">
+							<i v-else class="el-icon-plus avatar-uploader-icon"></i>
+						</el-upload>
+						<el-input v-show="false" v-model='commentForm.ProductPictures'></el-input>
+					</el-form-item>
+					<!-- 编号小于100018是公司内人 -->
+					<el-form-item label="返款金额：" prop="backMoney" v-if="loginUserId<=100018">
+						<el-input v-model="commentForm.backMoney"></el-input>
+					</el-form-item>
+				</div>
+			</el-form>
+			<span slot='footer' class='dialog-footer'>
+				<el-button @click="closeCommentModel">关闭</el-button>
+				<el-button type="primary" @click='confirmCommentSubmit' :loading="btnLoading">确认</el-button>
+			</span>
+		</el-dialog>
+
 	</section>
 </template>
 
@@ -355,7 +446,9 @@
 		taskList,
 		taskStateNum,
 		countryList,
-		rateList
+		rateList,
+		taskConfirmOrder,
+		taskConfirmComment
 	} from '@/api/api'
 	export default {
 		name: 'task',
@@ -391,7 +484,58 @@
 				yqx: 0, //已取消
 				error: 0, //异常
 				imageUrl: '',
-				payModel: false
+				payModel: false,
+				selectId: '',
+				orderModal: false,
+				orderForm: {
+					orderStatus: '1', //确认订单状态
+					buyImage: '',
+					buyNumber: '',
+					buyTime: '',
+					buyMoney: '',
+					remark: '', //正常备注
+					errRemark: '', //异常备注
+				},
+				orderRules: {
+					buyMoney: [{
+							required: true,
+							message: '请输入购买金额',
+							trigger: 'blur'
+						},
+						{
+							pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
+							message: '金额式不正确',
+							trigger: 'blur'
+						}
+					],
+					orderRemark: [{
+						required: true,
+						message: '请输入异常备注',
+						trigger: 'blur'
+					}]
+				},
+				serviceType: '',
+				commentModel: false,
+				commentTitle: '',
+				commentForm: {
+					PPaccount: '',
+					productLink: '', //产品链接
+					ProductPictures: '', //返款截图
+					backMoney: '' //返款金额
+				},
+				commentRules: {
+					backMoney: [{
+							required: true,
+							message: '请输入返款金额',
+							trigger: 'blur'
+						},
+						{
+							pattern: /^[0-9]+([.]{1}[0-9]+){0,1}$/,
+							message: '金额式不正确',
+							trigger: 'blur'
+						}
+					]
+				}
 			}
 		},
 		created() {
@@ -494,8 +638,8 @@
 				let _this = this
 				_this.title = '任务【' + row.OrderNumbers + '】详情'
 				_this.viewTaskData = Object.assign({}, row)
-				_this.viewTaskData.BuyImage = this.$IMGURL + row.BuyImage
-				_this.viewTaskData.ProductImage = this.$IMGURL + row.ProductImage
+				_this.viewTaskData.BuyImage = '/' + row.BuyImage
+				_this.viewTaskData.ProductImage = '/' + row.ProductImage
 				_this.viewModal = true //获取到数据后显示模态框
 			},
 
@@ -514,16 +658,156 @@
 				}).catch(() => {})
 			},
 
+			//确认订单窗口
+			confirmOrder(index, row) {
+				let _this = this
+				_this.orderModal = true
+				_this.selectId = row.Id
+				_this.orderForm.buyImage = row.BuyImage
+				_this.orderForm.buyNumber = row.AmazonNumber
+				_this.orderForm.buyTime = row.BuyTime
+				_this.orderForm.buyMoney = row.AmazonProductPrice
+			},
+
+			//确认订单提交
+			confirmOrderSubmit() {
+				let _this = this
+				_this.$refs.orderForm.validate((valid) => {
+					if (valid) {
+						_this.btnLoading = true
+						let userId = sessionStorage.getItem('userId')
+						let state = _this.orderForm.orderStatus
+						let remark = ''
+						if (state == '1') {
+							remark = _this.orderForm.remark
+						}
+						if (state == '0') {
+							remark = _this.orderForm.errRemark
+						}
+						let param = {
+							Id: _this.selectId,
+							UserId: userId,
+							State: Number(state),
+							Remark: remark,
+							AmazonProductPrice: _this.orderForm.buyMoney
+						}
+						taskConfirmOrder(param).then(res => {
+							_this.btnLoading = false
+							_this.closeSubmit()
+							_this.getAllData()
+							_this.getAllStatus()
+						}).catch(error => {
+							_this.btnLoading = false
+						})
+					}
+				})
+			},
+
+			//关闭订单确认
+			closeOrderModal() {
+				let _this = this
+				_this.orderModal = false
+				_this.$refs['orderForm'].resetFields()
+				_this.orderForm = {
+					orderStatus: '1',
+					remark: '',
+					errRemark: '',
+					buyImage: '',
+					buyNumber: '',
+					buyTime: '',
+					buyMoney: '',
+				}
+			},
+
+			//切换订单确认状态
+			orderStateChange() {
+				let _this = this
+				_this.$refs['orderForm'].resetFields()
+			},
+
+			// 确认评价窗口
+			confirmComment(index, row, val) {
+				let _this = this
+				if (val == '1') {
+					_this.commentTitle = '确认评价'
+				}
+				if (val == '2') {
+					_this.commentTitle = '补充返款信息'
+				}
+				_this.commentModel = true
+				_this.selectId = row.Id
+				_this.serviceType = row.ServiceType
+				_this.commentForm.PPaccount = row.PayAccount
+				_this.commentForm.productLink = row.ProductLink
+				_this.commentForm.ProductImage = row.ProductImage
+				_this.commentForm.backMoney = row.DealMoeny
+				_this.commentForm.ProductPictures = row.DealIamge
+				_this.imageUrl = row.DealIamge
+				_this.NoComment = Number(row.NoComment)
+			},
+
+			// 确认评价提交
+			confirmCommentSubmit() {
+				let _this = this
+				_this.$refs.commentForm.validate((valid) => {
+					if (valid) {
+						_this.btnLoading = true
+						let money = _this.commentForm.backMoney
+						if (!money) {
+							money = 0
+						}
+						let type = _this.serviceType
+						let uId = sessionStorage.getItem('userId')
+						let JYimg = _this.commentForm.ProductPictures
+						if (type == '2' && uId <= 100018 && !JYimg) {
+							this.$message.error('自返内单必须上传返款截图！')
+						} else {
+							let param = {
+								UserId: uId,
+								Id: _this.selectId,
+								UserImage: JYimg,
+								BackMoney: money,
+								NoComment: _this.NoComment
+							}
+							taskConfirmComment(param).then(res => {
+								_this.btnLoading = false
+								_this.colseCommentModel()
+								_this.getAllData()
+								_this.getAllStatus()
+							}).catch(error => {
+								_this.btnLoading = false
+							})
+						}
+					}
+				})
+			},
+
+			//确认评价窗口关闭
+			closeCommentModel() {
+				let _this = this
+				_this.commentModel = false
+				_this.commentForm = {
+					PPaccount: '',
+					productLink: '',
+					ProductImage: '',
+					ProductPictures: '',
+					backMoney: 0
+				}
+				_this.imageUrl = ''
+				_this.NoComment = ''
+			},
+
+
 			// 图片上传
 			handleAvatarSuccess(res, file) {
 				if (res.Data != '') {
 					this.orderForm.ProductPictures = res.Data
 				}
 				this.imageUrl = URL.createObjectURL(file.raw);
-				this.$message.success('产品图片上传成功！')
+				this.$message.success('图片上传成功！')
 			},
 			handleError(res) {
-				this.$message.error('产品图片上传失败！')
+				this.$message.error('图片上传失败！')
 			},
 			beforeAvatarUpload(file) {
 				const isJPG = file.type === 'image/jpeg';
@@ -537,12 +821,6 @@
 					this.$message.error('上传图片大小不能超过 5MB!');
 				}
 				return (isJPG || isPNG || isGIF || isBMP) && isLt5M;
-			},
-
-			//查询条件去空格
-			searchToTrim() {
-				let _this = this
-				_this.searchForm.searchWords = _this.searchForm.searchWords.trim()
 			},
 
 			//查询
@@ -584,6 +862,12 @@
 				let _this = this
 				_this.pageIndex = val
 				_this.getAllData()
+			},
+
+			//查询条件去空格
+			searchToTrim() {
+				let _this = this
+				_this.searchForm.searchWords = _this.searchForm.searchWords.trim()
 			},
 
 			//导出

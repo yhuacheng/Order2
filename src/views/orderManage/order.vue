@@ -953,9 +953,7 @@
 							_this.showPay()
 							_this.allOrderList()
 							_this.allOrderStatus()
-						}).catch((err) => {
-							_this.btnLoading = false
-						})
+						}).catch((err) => {})
 					}
 				})
 			},
