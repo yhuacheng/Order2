@@ -30,7 +30,7 @@
 						</el-tooltip>
 					</span>
 				</el-form-item>
-				<el-form-item label="账户余额" style="border: 1px solid #E6A23C;padding: 0 15px;">
+				<el-form-item label="账户余额" style="border: 1px solid #E6A23C;border-radius: 4px;padding: 0 15px;">
 					<span class="success fz16 bold">{{balance}}</span>
 				</el-form-item>
 			</el-form>
