@@ -73,7 +73,7 @@ export function get(url, params) {
  */
 export function post(url, params) {
 	return new Promise((resolve, reject) => {
-		// axios.post(url, qs.stringify(params)) //转换formDtata格式
+		// let params = qs.stringify(params) //参数转换为formData形式
 		axios.post(url, params)
 			.then(res => {
 				resolve(res.data);

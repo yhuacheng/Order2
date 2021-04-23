@@ -34,7 +34,8 @@
 				<el-input type="text" v-model="regForm.phoneCode" auto-complete="off" placeholder="验证码"
 					style="width: 200px;"></el-input>
 				<el-button type="primary" :disabled="disabledClick" @click="handlePhoneCode" style="float: right">
-					{{btnTxt}}</el-button>
+					{{btnTxt}}
+				</el-button>
 			</el-form-item>
 			<el-form-item prop="password">
 				<el-input type="password" v-model="regForm.password" auto-complete="off" placeholder="密码"></el-input>
@@ -62,13 +63,14 @@
 				<el-input type="text" v-model="findForm.phoneCode" auto-complete="off" placeholder="验证码"
 					style="width: 200px;"></el-input>
 				<el-button type="primary" :disabled="disabledClick" @click="handlePhoneCode" style="float: right">
-					{{btnTxt}}</el-button>
+					{{btnTxt}}
+				</el-button>
 			</el-form-item>
 			<el-form-item prop="password">
 				<el-input type="password" v-model="findForm.password" auto-complete="off" placeholder="新密码"></el-input>
 			</el-form-item>
 			<el-form-item>
-				<el-button class="login-btn" type="primary" @click="findSubmiut" :loading="btnLoading">确定</el-button>
+				<el-button class="login-btn" type="primary" @click="checkFindCode" :loading="btnLoading">确定</el-button>
 				<div class="tixing"><span class="txt1">记起密码？</span>
 					<el-link type='primary' :underline="false" @click="doType='login'">立即登录</el-link>
 				</div>
@@ -83,7 +85,9 @@
 		login,
 		register,
 		regCode,
-		findCode
+		findCode,
+		findCodeCheck,
+		resetPassWord
 	} from '@/api/api'
 	export default {
 		name: 'Login',
@@ -131,7 +135,7 @@
 				rules2: {
 					account: [{
 						validator: validatePhone,
-						trigger: "blur"
+						trigger: "change"
 					}],
 					password: [{
 							required: true,
@@ -144,11 +148,16 @@
 							trigger: 'blur'
 						}
 					],
-					phoneCode: [{
+					phoneCode: {
 						required: true,
 						message: '请输入手机验证码',
 						trigger: 'blur'
-					}],
+					},
+					code: {
+						required: true,
+						message: '请输入推荐码',
+						trigger: 'blur'
+					}
 				},
 				findForm: {
 					account: '',
@@ -158,7 +167,7 @@
 				rules3: {
 					account: [{
 						validator: validatePhone,
-						trigger: "blur"
+						trigger: "change"
 					}],
 					phoneCode: [{
 						required: true,
@@ -212,7 +221,7 @@
 							Password: _this.loginForm.password
 						}
 						login(params).then(res => {
-							let user = res.Data.split(',')
+							let user = res.UserInfo.split(',')
 							sessionStorage.setItem('userId', user[0])
 							sessionStorage.setItem('userName', user[1])
 							_this.btnLoading = false
@@ -236,28 +245,6 @@
 							PhoneCode: _this.regForm.phoneCode,
 							Name: _this.regForm.nickName,
 							Code: _this.regForm.code
-						}
-						register(params).then(res => {
-							_this.btnLoading = false
-							_this.doType = 'login'
-						}).catch((e) => {
-							_this.btnLoading = false
-						})
-					}
-				})
-				_this.disabledClick = true
-			},
-
-			//找回密码
-			findSubmiut() {
-				let _this = this
-				_this.$refs.findForm.validate((valid) => {
-					if (valid) {
-						_this.btnLoading = true
-						let params = {
-							Phone: _this.findForm.account,
-							PhoneCode: _this.findForm.phoneCode,
-							PassWord: _this.findForm.password,
 						}
 						register(params).then(res => {
 							_this.btnLoading = false
@@ -309,7 +296,41 @@
 					Phone: _this.findForm.account
 				}
 				findCode(params).then(res => {}).catch((e) => {})
-			}
+			},
+
+			//找回密码手机验证码验证
+			checkFindCode() {
+				let _this = this
+				let param = {
+					Phone: _this.findForm.account,
+					Code: _this.findForm.phoneCode
+				}
+				findCodeCheck(param).then(res => {
+					_this.resetSubmiut()
+				}).catch(err => {})
+			},
+
+			//重置密码
+			resetSubmiut() {
+				let _this = this
+				_this.$refs.findForm.validate((valid) => {
+					if (valid) {
+						_this.btnLoading = true
+						let params = {
+							Phone: _this.findForm.account,
+							Password: _this.findForm.password,
+							NewPassword: _this.findForm.password
+						}
+						resetPassWord(params).then(res => {
+							_this.btnLoading = false
+							_this.doType = 'login'
+						}).catch((e) => {
+							_this.btnLoading = false
+						})
+					}
+				})
+				_this.disabledClick = true
+			},
 
 		}
 	}

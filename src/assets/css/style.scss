@@ -338,6 +338,13 @@ body {
 	background: #f5f5f5;
 }
 
+.item-title{
+	display: block;
+	width: 80px;
+	float: left;
+	text-align: right;
+}
+
 /* 模态框纵向外滚动条改为内滚动条 */
 /* 默认模态框 */
 .el-dialog {

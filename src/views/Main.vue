@@ -152,7 +152,7 @@
 					Id: sessionStorage.getItem('userId')
 				}
 				userInfo(params).then(res => {
-					_this.balance = res[0].accountbalance
+					_this.balance = res.AccountBalance
 				}).catch((e) => {})
 			},
 

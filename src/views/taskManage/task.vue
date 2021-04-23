@@ -175,23 +175,12 @@
 				</div>
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='任务编码：'>
 								<span>{{viewTaskData.OrderNumbers}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='任务类型：' prop="ServiceType">
-								<span v-if="viewTaskData.ServiceType==1">评后返（代返）</span>
-								<span v-if="viewTaskData.ServiceType==2">评后返（自返）</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='国家：'>
-								<span>{{viewTaskData.countryName}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='任务状态：'>
 								<span v-if="viewTaskData.TaskState==1">待分配</span>
 								<span v-if="viewTaskData.TaskState==2" class="warning">待购买</span>
@@ -203,29 +192,40 @@
 								<span v-if="viewTaskData.TaskState==8" class="warning">异常</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
+							<el-form-item label='任务类型：' prop="ServiceType">
+								<span v-if="viewTaskData.ServiceType==1">评后返（代返）</span>
+								<span v-if="viewTaskData.ServiceType==2">评后返（自返）</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='国家：'>
+								<span>{{viewTaskData.countryName}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
 							<el-form-item label='产品ASIN：'>
 								<span>{{viewTaskData.Asin}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='产品名称：'>
 								<span>{{viewTaskData.ProductName}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='产品评分：'>
 								<el-rate style="margin-top: 10px;" v-model="viewTaskData.OrderProductScore" disabled
 									show-score text-color="#ff9900"></el-rate>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType == '2'">
+						<el-col :span="8" v-if="viewTaskData.ServiceType == '2'">
 							<el-form-item label='预计价格：'>
 								<span
 									v-show="viewTaskData.ProductPrice!=null"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='任务执行时间：'>
 								<span>{{viewTaskData.ExecutionTime}}</span>
 							</el-form-item>
@@ -244,57 +244,57 @@
 				</div>
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='购买单号：'>
 								<span>{{viewTaskData.AmazonNumber}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='购买时间：'>
 								<span>{{viewTaskData.BuyTime}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='购买价格：'>
 								<span v-show="viewTaskData.AmazonProductPrice">
 									<span>{{viewTaskData.symbol}}</span>
 									{{viewTaskData.AmazonProductPrice}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
 							<el-form-item label='产品运费：'>
 								<span v-show="viewTaskData.Freight"><span>{{viewTaskData.symbol}}</span>
 									{{viewTaskData.Freight}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
 							<el-form-item label='产品税费：'>
 								<span v-show="viewTaskData.Taxation"><span>{{viewTaskData.symbol}}</span>
 									{{viewTaskData.Taxation}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
 							<el-form-item label='其他费用：'>
 								<span v-show="viewTaskData.Other">{{viewTaskData.symbol}}</span>
 								{{viewTaskData.Other}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
 							<el-form-item label='增值费：'>
 								<span>{{viewTaskData.OrderAddedFee}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
+						<el-col :span="8">
 							<el-form-item label='服务费：'>
 								<span>{{viewTaskData.OrderUnitPriceSerCharge}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
 							<el-form-item label='汇率：'>
 								<span>{{viewTaskData.OrderExchangeRate}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12" v-if="viewTaskData.ServiceType==1">
+						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
 							<el-form-item label='总额：'>
 								<span style="color: red;" v-show="viewTaskData.Total"><span>￥</span>
 									{{viewTaskData.Total}}</span>

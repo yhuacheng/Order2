@@ -133,7 +133,7 @@
 			:close-on-click-modal="false" :before-close="closeModel">
 			<el-row>
 				<el-col :span="24" :xs="24">
-					<el-form :model="orderForm" ref="orderForm" :rules="orderRule" status-icon label-width="110px">
+					<el-form :model="orderForm" ref="orderForm" :rules="orderRule" status-icon label-width="120px">
 						<el-card class="box-card">
 							<div slot="header" class="clearfix">
 								<span>产品信息</span>
@@ -162,7 +162,7 @@
 							</el-col>
 							<el-col :span="8" :xs="24">
 								<el-form-item label="国家" prop="CountryId">
-									<el-select v-model="orderForm.CountryId" placeholder="请选择" @change='changeCountry'
+									<el-select v-model="orderForm.CountryId" placeholder="请选择国家" @change='changeCountry'
 										style="width: 100%">
 										<el-option v-for="(item,index) in countryData" :key="index" :value="item.Id"
 											:label="item.CountryName"></el-option>
@@ -206,20 +206,20 @@
 							</el-col>
 							<el-col :span="16" :xs="24">
 								<el-form-item label="产品位置" prop="Place">
-									<el-input v-model="orderForm.Place" maxlength="500" show-word-limit
-										class="limit-txt" placeholder="请输入产品所在位置"></el-input>
+									<el-input v-model="orderForm.Place" maxlength="500" class="limit-txt"
+										placeholder="请输入产品所在位置"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="24" :xs="24">
 								<el-form-item label="产品名称" style="width: 100%;" prop="ProductName">
-									<el-input v-model="orderForm.ProductName" maxlength="500" show-word-limit
-										class="limit-txt" placeholder="请输入产品名称"></el-input>
+									<el-input v-model="orderForm.ProductName" maxlength="500" class="limit-txt"
+										placeholder="请输入产品名称"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="24" :xs="24">
 								<el-form-item label="产品链接" style="width: 100%;" prop="ProductLink">
-									<el-input v-model="orderForm.ProductLink" maxlength="500" show-word-limit
-										class="limit-txt" placeholder="请以http://或者https://开头"></el-input>
+									<el-input v-model="orderForm.ProductLink" maxlength="500" class="limit-txt"
+										placeholder="请以http:// 或 https://开头"></el-input>
 								</el-form-item>
 							</el-col>
 						</el-card>
@@ -227,49 +227,48 @@
 							<div slot="header" class="clearfix">
 								<span>下单信息</span>
 							</div>
-							<el-col :span="12" :xs="24">
+							<el-col :span="8" :xs="24">
 								<el-form-item label="关键词类型" prop='KeywordType'>
-									<el-radio-group v-model="orderForm.KeywordType">
-										<el-radio label="1" value="2">产品关键词</el-radio>
-										<el-radio label="2" value="2">CPC关键词</el-radio>
+									<el-radio-group v-model="orderForm.KeywordType" size="mini">
+										<el-radio border label="1" value="2">产品关键词</el-radio>
+										<el-radio border label="2" value="2">CPC关键词</el-radio>
 									</el-radio-group>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12" :xs="24">
+							<el-col :span="8" :xs="24">
 								<el-form-item label="关键词" prop="ProductKeyword">
 									<el-input v-model="orderForm.ProductKeyword" :rows="5" maxlength="500"
-										show-word-limit placeholder='请输入关键词'></el-input>
+										placeholder='请输入关键词'></el-input>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12" :xs="24">
+							<el-col :span="8" :xs="24">
 								<el-form-item label="留评比例" prop="ProductPosition">
 									<el-select v-model="orderForm.ProductPosition" placeholder="请选择留评比例"
-										@change="getFee" style="width: 246px;">
+										@change="getFee" style="width: 100%;">
 										<el-option v-for="(item,index) in biliData" :key="index" :value="item.bili"
 											:label="item.bili"></el-option>
 									</el-select>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12" :xs="24">
+							<el-col :span="8" :xs="24">
 								<el-form-item label="任务开始时间" prop="StartTime">
 									<el-date-picker v-model="orderForm.StartTime" value-format="yyyy-MM-dd"
-										style="display: inline-block;width: 100%;" type="date" placeholder="选择日期"
+										style="display: inline-block;width: 100%;" type="date" placeholder="任务开始时间"
 										:picker-options="startDataOp">
 									</el-date-picker>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12" :xs="24">
-								<el-form-item label="订单数量" prop="Number">
-									<el-input v-model="orderForm.Number" placeholder="请输入订单数量" style="width: 246px;">
-									</el-input>
-								</el-form-item>
-							</el-col>
-							<el-col :span='12' :xs="24">
-								<el-form-item label="任务结束时间">
+							<el-col :span='8' :xs="24">
+								<el-form-item label="结束时间">
 									<el-date-picker v-model="orderForm.EndTime" value-format="yyyy-MM-dd"
-										style="display: inline-block;width: 100%;" type="date" placeholder="选择日期"
+										style="display: inline-block;width: 100%;" type="date" placeholder="任务结束时间"
 										:picker-options="endDateOp">
 									</el-date-picker>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8" :xs="24">
+								<el-form-item label="订单数量" prop="Number">
+									<el-input v-model="orderForm.Number" placeholder="请输入订单数量"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span='24' :xs="24">
@@ -281,26 +280,25 @@
 						</el-card>
 						<el-col :span="24" :xs="24">
 							<div class="mt30 fz14" v-show="this.orderForm.ServiceType">
-								<div v-show="this.orderForm.ServiceType==1">
-									<span>产品总价：</span>
+								<div v-show="orderForm.ServiceType==1">
+									<span class="item-title">产品总价：</span>
 									<span class="danger">￥{{productTotal}}</span>
-									<span class="ml20">(产品总价) = {{orderForm.ProductPrice}} (产品价格) *
-										{{Number(orderForm.Number)}} (数量) * {{rate}}
-										(汇率)</span>
+									<span class="ml20">(产品总价) = {{Number(orderForm.ProductPrice)}} (产品价格) *
+										{{Number(orderForm.Number)}} (数量) *
+										{{rate}} (汇率)
+									</span>
 								</div>
 								<div class="mt20">
-									<span>服务费：</span>
+									<span class="item-title">服务费：</span>
 									<span class="danger">￥{{serviceFeeTotal}}</span>
 									<span class="ml20">(服务费) = {{fee}} (服务费单价) * {{Number(orderForm.Number)}} (数量) +
-										{{addFee}}(增值费单价) *
-										{{Number(orderForm.Number)}} (数量)</span>
+										{{addFee}} (增值费单价) * {{Number(orderForm.Number)}} (数量)</span>
 								</div>
 								<div class="mt20">
-									<span>合计：</span>
+									<span class="item-title">合计：</span>
 									<span class="danger">￥{{allTotal}}</span>
-									<span class="ml20">(合计) = <span
-											v-show="this.orderForm.ServiceType==1">{{productTotal}} (产品总价) +</span>
-										{{serviceFeeTotal}}(服务费)</span>
+									<span class="ml20">(合计) = <span v-show="orderForm.ServiceType==1">{{productTotal}}
+											(产品总价) +</span> {{serviceFeeTotal}} (服务费)</span>
 								</div>
 							</div>
 						</el-col>
@@ -348,51 +346,56 @@
 				<el-form :model='viewOrderData' ref='viewOrderData' label-width='150px'>
 					<el-row>
 						<el-col :span="24">
-							<el-form-item label='产品图片：' prop="ProductPictures">
+							<el-form-item label='产品图片：'>
 								<el-image style="width: 80px" class="pointer" v-if="viewOrderData.ProductPictures"
 									:src="'/'+viewOrderData.ProductPictures"
 									:preview-src-list="('/'+viewOrderData.ProductPictures || '').split(',')"></el-image>
 							</el-form-item>
 						</el-col>
-						<el-col :span="24">
-							<el-form-item label='产品链接：' prop="ProductLink">
-								<el-link type="primary" :underline="false" :href="viewOrderData.ProductLink"
-									target="_blank">{{viewOrderData.ProductLink}}</el-link>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='订单类型：' prop="ServiceType">
+						<el-col :span="8">
+							<el-form-item label='订单类型：'>
 								<span v-if="viewOrderData.ServiceType==1">评后返（代返）</span>
 								<span v-if="viewOrderData.ServiceType==2">评后返（自返）</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品名称：' prop="ProductName">
-								<span>{{viewOrderData.ProductName}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品ASIN：' prop="Asin">
-								<span>{{viewOrderData.Asin}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='店铺名称：' prop="ShopName">
-								<span>{{viewOrderData.ShopName}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品单价：' prop="ProductPrice">
-								<span>{{viewOrderData.symbol}}{{viewOrderData.ProductPrice}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='国家：' prop="CountryName">
+						<el-col :span="8">
+							<el-form-item label='国家：'>
 								<span>{{viewOrderData.CountryName}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='订单状态：' prop="OrderState">
+						<el-col :span="8">
+							<el-form-item label='店铺名称：'>
+								<span>{{viewOrderData.ShopName}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='产品品牌：'>
+								<span>{{viewOrderData.Brand}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='产品ASIN：'>
+								<span>{{viewOrderData.Asin}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='产品价格：'>
+								<span>{{viewOrderData.symbol}}{{viewOrderData.ProductPrice}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='产品评分：'>
+								<el-rate style="margin-top: 10px;" v-model="viewOrderData.ProductScore" disabled
+									show-score text-color="#ff9900"></el-rate>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='产品位置：'>
+								<span>{{viewOrderData.Place}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='订单状态：'>
 								<span v-if="viewOrderData.OrderState==1">待确认</span>
 								<span class="primary" v-if="viewOrderData.OrderState==2">待分配</span>
 								<span class="warning" v-if="viewOrderData.OrderState==3">已分配</span>
@@ -400,10 +403,15 @@
 								<span class="danger" v-if="viewOrderData.OrderState==5">已取消</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品评分：' prop="ProductScore">
-								<el-rate style="margin-top: 10px;" v-model="viewOrderData.ProductScore" disabled
-									show-score text-color="#ff9900"></el-rate>
+						<el-col :span="24">
+							<el-form-item label='产品名称：'>
+								<span>{{viewOrderData.ProductName}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="24">
+							<el-form-item label='产品链接：'>
+								<el-link type="primary" :underline="false" :href="viewOrderData.ProductLink"
+									target="_blank">{{viewOrderData.ProductLink}}</el-link>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -415,64 +423,64 @@
 				</div>
 				<el-form :model='viewOrderData' ref='viewOrderData' label-width='150px'>
 					<el-row>
-						<el-col :span="12">
-							<el-form-item label='订单编号：' prop="OrderNumbers">
+						<el-col :span="8">
+							<el-form-item label='订单编号：'>
 								<span>{{viewOrderData.OrderNumber}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='关键词类型：' prop="KeywordType">
+						<el-col :span="8">
+							<el-form-item label='关键词类型：'>
 								<span v-if="viewOrderData.KeywordType==1">产品关键词</span>
 								<span v-if="viewOrderData.KeywordType==2">CPC关键词</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='关键词：' prop="ProductKeyword">
+						<el-col :span="8">
+							<el-form-item label='关键词：'>
 								<span>{{viewOrderData.ProductKeyword}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='任务数量：' prop="Number">
-								<span>{{viewOrderData.Number}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label='留评率：' prop="ProductPosition">
+						<el-col :span="8">
+							<el-form-item label='留评比例：'>
 								<span>{{viewOrderData.ProductPosition}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='任务开始时间：' prop="StartTimes">
+						<el-col :span="8">
+							<el-form-item label='任务开始时间：'>
 								<span>{{viewOrderData.StartTimes}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='任务结束时间：' prop="EndTimes">
+						<el-col :span="8">
+							<el-form-item label='任务结束时间：'>
 								<span>{{viewOrderData.EndTimes}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='汇率：' prop="ExchangeRate">
+						<el-col :span="8">
+							<el-form-item label='订单数量：'>
+								<span>{{viewOrderData.Number}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='汇率：'>
 								<span>{{viewOrderData.ExchangeRate}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='产品总价：' prop="TotalProductPrice">
+						<el-col :span="8">
+							<el-form-item label='产品总价：'>
 								<span>{{viewOrderData.TotalProductPrice}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='服务费单价：' prop="UnitPriceSerCharge">
+						<el-col :span="8">
+							<el-form-item label='服务费单价：'>
 								<span>{{viewOrderData.UnitPriceSerCharge}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="12">
-							<el-form-item label='增值费单价：' prop="AddedFee">
+						<el-col :span="8">
+							<el-form-item label='增值费单价：'>
 								<span>{{viewOrderData.AddedFee}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="24">
-							<el-form-item label='合计：' prop="Total">
+							<el-form-item label='合计：'>
 								<span style="color: red;">{{viewOrderData.Total}}</span>
 								<span style="margin-left: 15px;"> {{viewOrderData.TotalProductPrice}} (产品总价) +
 									{{viewOrderData.UnitPriceSerCharge}}(服务费单价) * {{viewOrderData.Number}} (任务数量) +
@@ -481,7 +489,7 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="24">
-							<el-form-item label='下单备注：' prop="Remarks">
+							<el-form-item label='下单备注：'>
 								<span>{{viewOrderData.Remarks}}</span>
 							</el-form-item>
 						</el-col>

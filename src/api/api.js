@@ -7,16 +7,24 @@ export const login = (params) => post('/api/Login/UserLogin', params) //登录
 
 export const register = (params) => post('/api/CustomerUser/AddUser', params) //注册
 export const regCode = (params) => post('/api/CustomerUser/zCSend', params) //注册获取验证码
-export const findCode = (params) => post('/api/CustomerUser/ChangZCSeng', params) //找回密码获取验证码
 
-export const editPassword = (params) => post('/api/AroundUser/ResetPwd', params) //修改密码
+export const findCode = (params) => post('/api/CustomerUser/ChangZCSeng', params) //找回密码获取验证码
+export const findCodeCheck = (params) => post('/api/CustomerUser/RetrievePassWord', params) //找回密码手机验证码验证
+export const resetPassWord = (params) => post('/api/CustomerUser/ChangeLoginPassWord', params) //找回密码重置密码
+
+export const editPassword = (params) => post('/api/CustomerUser/ChangePassWord', params) //修改密码
 
 export const editQQ = (params) => post('/api/CustomerUser/ChangeQQ', params) //修改QQ
 export const editName = (params) => post('/api/CustomerUser/ChangeName', params) //修改姓名
 export const editWeChat = (params) => post('/api/CustomerUser/ChangeWeChat', params) //修改微信
 
+export const oldPhoneCode = (params) => post('/api/CustomerUser/ChangePhoneCode', params) //修改手机号获取验证码
+export const oldPhoneCodeCheck = (params) => post('/api/CustomerUser/YzChangePhoneCode', params) //修改手机号验证码验证
+export const newPhoneCode = (params) => post('/api/CustomerUser/ChangeNewPhoneCode', params) //新手机号获取验证码
+export const editPhone = (params) => post('/api/CustomerUser/ChangePhone', params) //修改手机号
+
 export const taskSum = (params) => get('/api/Task/GetAllTaskState', params) //首页任务数量
-export const userInfo = (params) => post('/api/HomePage/GetUserInformation', params) //个人信息、余额
+export const userInfo = (params) => get('/api/HomePage/GetUserInformation', params) //个人信息、余额
 export const notice = (params) => get('/api/HomePage/GetHomePage') //首页公告
 
 export const orderList = (params) => post('/api/Order/GetOrders', params) //订单列表

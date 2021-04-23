@@ -214,7 +214,7 @@
 						let params = {
 							Id: sessionStorage.getItem('userId'),
 							OldPassWord: _this.editForm.passwordOld,
-							NewPassWord: _this.editForm.passwordNew,
+							NowPassWord: _this.editForm.passwordNew,
 							ConfirmPassWord: _this.editForm.passwordAgain
 						}
 						editPassword(params).then(res => {
