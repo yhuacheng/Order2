@@ -28,9 +28,11 @@ export const userInfo = (params) => get('/api/HomePage/GetUserInformation', para
 export const notice = (params) => get('/api/HomePage/GetHomePage') //首页公告
 
 export const orderList = (params) => post('/api/Order/GetOrders', params) //订单列表
-export const orderStateNum = (params) => get('/api/Order/GetOrderState', params) //各订单状态数量
+export const orderStateNum = (params) => post('/api/Order/GetOrderState', params) //各订单状态数量
 export const addOrder = (params) => post('/api/Order/AddOrder', params) //创建订单
 export const orderState = (params) => post('/api/Order/ChangeOrderState', params) //取消订单
+
+export const payMent = (params) => get('/api/Order/GetPayment', params) //支付方式
 
 export const taskList = (params) => post('/api/Task/GetMyTaskList', params) //任务管理
 export const taskStateNum = (params) => post('/api/Task/MyTaskStates', params) //任务管理状态
@@ -43,9 +45,7 @@ export const rateList = (params) => get('/api/Rate/GetRate', params) //汇率
 
 export const feeList = (params) => get('/api/Fee/GetFee', params) //服务费
 
-export const addFeeList = (params) => get('/api/IncrementServiceFee/IncrementServiceFee', params) //增值费
-
-export const payMent = (params) => get('/api/Order/GetPayment', params) //支付方式
+export const addFeeList = (params) => get('/api/IncrementServiceFee/GetIncrementServiceFee', params) //增值费
 
 export const takeMoneyList = (params) => get('/api/DrawMoney/GetUserWithdrawal', params) //提现列表
 export const takeMoneyAdd = (params) => post('/api/DrawMoney/UserWithdrawal', params) //提现新增

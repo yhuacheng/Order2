@@ -5,7 +5,7 @@
 			<el-form :inline="true" :model="searchForm" size="small">
 				<el-form-item label="搜索内容">
 					<el-input @keyup.native="searchToTrim" v-model="searchForm.searchWords"
-						placeholder="订单编号/产品名称/ASIN/关键词" style="width: 232px;"></el-input>
+						placeholder="订单编号 / 产品名称 / ASIN" style="width: 232px;"></el-input>
 				</el-form-item>
 				<el-form-item label="国家">
 					<el-select v-model="searchForm.country" multiple placeholder="请选择国家">
@@ -30,10 +30,11 @@
 		<el-col :span="24" class="toolbar">
 			<el-button type="primary" size="small" @click="createOrder"><i class="el-icon-edit-outline"></i> 创建订单
 			</el-button>
-			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出订单</el-button>
+			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-download"></i> 导出订单
+			</el-button>
 			<div class="tagMenu">
 				<el-badge :value="all" type="success" class="item">
-					<el-button size="small" @click='searchStateData("")' :class="{'active':searchForm.state==''}">全部
+					<el-button size="small" @click='searchStateData(0)' :class="{'active':searchForm.state==''}">全部
 					</el-button>
 				</el-badge>
 				<el-badge :value="dqr" type="info" class="item">
@@ -87,8 +88,8 @@
 			<el-table-column prop="ProductName" label="产品名称" align="center" :show-overflow-tooltip='true'>
 			</el-table-column>
 			<el-table-column prop="ShopName" label="店铺" align="center" :show-overflow-tooltip='true'></el-table-column>
-			<el-table-column prop="Asin" label="ASIN" align="center" width="110"></el-table-column>
-			<el-table-column prop="ProductKeyword" label="关键词" align="center" :show-overflow-tooltip='true'>
+			<el-table-column prop="Asin" label="ASIN" align="center" width="120"></el-table-column>
+			<el-table-column prop="ProductKeyWord" label="关键词" align="center" :show-overflow-tooltip='true'>
 			</el-table-column>
 			<el-table-column prop="ExchangeRate" label="汇率" align="center"></el-table-column>
 			<el-table-column prop="Number" label="任务数" align="center"></el-table-column>
@@ -100,7 +101,7 @@
 					<span class="danger">{{scope.row.Total}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="OrderTime" label="下单时间" align="center" width="100"></el-table-column>
+			<el-table-column prop="OrderTime" label="下单时间" align="center" width="90"></el-table-column>
 			<el-table-column prop="OrderState" label="状态" align="center">
 				<template slot-scope="scope">
 					<span v-if="scope.row.OrderState==1">待确认</span>
@@ -110,12 +111,12 @@
 					<span v-if="scope.row.OrderState==5" class="danger">已取消</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="OrderState" label="操作" align="center" width="145">
+			<el-table-column prop="OrderState" label="操作" width="155">
 				<template slot-scope="scope">
-					<el-button size="small" @click="cancelHandel(scope.$index,scope.row)" type="danger"
-						v-show="scope.row.state==1">取消</el-button>
-					<el-button size="small" @click="createOrderAgain(scope.$index,scope.row)" type="primary">再来一单
+					<el-button size="small" @click="createOrderAgain(scope.$index,scope.row)" type="primary">再一单
 					</el-button>
+					<el-button size="small" @click="cancelHandel(scope.$index,scope.row)" type="danger"
+						v-if="scope.row.OrderState==1">取消</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -129,12 +130,12 @@
 		</el-col>
 
 		<!-- 创建订单 -->
-		<el-dialog title="创建订单" :visible.sync="addOrderModal" width="70%" custom-class="fixed-dialog"
+		<el-dialog title="创建订单" :visible.sync="orderModal" width="70%" custom-class="fixed-dialog"
 			:close-on-click-modal="false" :before-close="closeModel">
 			<el-row>
 				<el-col :span="24" :xs="24">
 					<el-form :model="orderForm" ref="orderForm" :rules="orderRule" status-icon label-width="120px">
-						<el-card class="box-card">
+						<el-card>
 							<div slot="header" class="clearfix">
 								<span>产品信息</span>
 							</div>
@@ -149,24 +150,6 @@
 										<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 									</el-upload>
 									<el-input v-show="false" v-model='orderForm.ProductPictures'></el-input>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8" :xs="24">
-								<el-form-item label="订单类型" prop="ServiceType">
-									<el-select v-model="orderForm.ServiceType" placeholder="请选择订单类型"
-										style="width: 100%">
-										<el-option value="1" label="评后返（代返）"></el-option>
-										<el-option value="2" label="评后返（自返）"></el-option>
-									</el-select>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8" :xs="24">
-								<el-form-item label="国家" prop="CountryId">
-									<el-select v-model="orderForm.CountryId" placeholder="请选择国家" @change='changeCountry'
-										style="width: 100%">
-										<el-option v-for="(item,index) in countryData" :key="index" :value="item.Id"
-											:label="item.CountryName"></el-option>
-									</el-select>
 								</el-form-item>
 							</el-col>
 							<el-col :span="8" :xs="24">
@@ -189,14 +172,7 @@
 								</el-form-item>
 							</el-col>
 							<el-col :span="8" :xs="24">
-								<el-form-item label="产品价格" prop="ProductPrice">
-									<el-input v-model="orderForm.ProductPrice" @blur="getAddFee" placeholder="请输入产品价格">
-										<template slot="append">{{symbol}}</template>
-									</el-input>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8" :xs="24">
-								<el-form-item label="产品评分" prop="ProductPrice">
+								<el-form-item label="产品评分">
 									<el-form-item>
 										<el-rate v-model="orderForm.ProductScore"
 											style="border: 1px solid #DCDFE6;padding: 8px;border-radius: 4px;position: relative;top: -3px;">
@@ -223,15 +199,15 @@
 								</el-form-item>
 							</el-col>
 						</el-card>
-						<el-card class="box-card mt10">
+						<el-card class="mt20">
 							<div slot="header" class="clearfix">
 								<span>下单信息</span>
 							</div>
 							<el-col :span="8" :xs="24">
 								<el-form-item label="关键词类型" prop='KeywordType'>
 									<el-radio-group v-model="orderForm.KeywordType" size="mini">
-										<el-radio border label="1" value="2">产品关键词</el-radio>
-										<el-radio border label="2" value="2">CPC关键词</el-radio>
+										<el-radio border label="1" value="1">产品关键词</el-radio>
+										<el-radio border label="2" value="2" style="margin: 0;">CPC关键词</el-radio>
 									</el-radio-group>
 								</el-form-item>
 							</el-col>
@@ -242,12 +218,43 @@
 								</el-form-item>
 							</el-col>
 							<el-col :span="8" :xs="24">
+								<el-form-item label="订单类型" prop="ServiceType">
+									<el-select v-model="orderForm.ServiceType" placeholder="请选择订单类型"
+										style="width: 100%">
+										<el-option value="1" label="评后返（代返）"></el-option>
+										<el-option value="2" label="评后返（自返）"></el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8" :xs="24">
+								<el-form-item label="国家" prop="CountryId">
+									<el-select v-model="orderForm.CountryId" placeholder="请选择国家" @change='changeCountry'
+										style="width: 250px">
+										<el-option v-for="(item,index) in countryData" :key="index" :value="item.Id"
+											:label="item.CountryName"></el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8" :xs="24">
+								<el-form-item label="产品价格" prop="ProductPrice">
+									<el-input v-model="orderForm.ProductPrice" @blur="getAddFee" placeholder="请输入产品价格">
+										<template slot="append">{{symbol}}</template>
+									</el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8" :xs="24">
 								<el-form-item label="留评比例" prop="ProductPosition">
 									<el-select v-model="orderForm.ProductPosition" placeholder="请选择留评比例"
 										@change="getFee" style="width: 100%;">
 										<el-option v-for="(item,index) in biliData" :key="index" :value="item.bili"
 											:label="item.bili"></el-option>
 									</el-select>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8" :xs="24">
+								<el-form-item label="订单数量" prop="Number">
+									<el-input v-model="orderForm.Number" placeholder="请输入订单数量" style="width: 250px;">
+									</el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="8" :xs="24">
@@ -264,11 +271,6 @@
 										style="display: inline-block;width: 100%;" type="date" placeholder="任务结束时间"
 										:picker-options="endDateOp">
 									</el-date-picker>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8" :xs="24">
-								<el-form-item label="订单数量" prop="Number">
-									<el-input v-model="orderForm.Number" placeholder="请输入订单数量"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span='24' :xs="24">
@@ -305,35 +307,33 @@
 					</el-form>
 				</el-col>
 			</el-row>
-			<span slot="footer" class="dialog-footer">
+			<div slot="footer" class="dialog-footer">
 				<el-button @click="closeModel">取消</el-button>
 				<el-button type="primary" @click="submitOrder" :loading="btnLoading">确定</el-button>
-			</span>
+			</div>
 		</el-dialog>
 
 		<!-- 付款-->
-		<el-dialog title="付款" :visible.sync="payModel" :close-on-click-modal="false" width="20%" center
+		<el-dialog title="待付款信息" :visible.sync="payModel" :close-on-click-modal="false" width="20%" center
 			:before-close="payClose">
 			<div class="txt-c">
 				<div>
 					<span>账户余额：</span>
 					<span class="success">￥{{balance}}</span>
-				</div>
-				<div class="mt10">
-					<span>待付金额：</span>
+					<span class="ml20">待付金额：</span>
 					<span class="danger">￥{{payMoney}}</span>
 				</div>
-				<div class="mt20">请选择以下方式充值</div>
-				<div v-for="(item,index) in payMentData" :key='index' class="center">
-					<div class="mt10">
+				<div class="mt30">请选择以下方式充值</div>
+				<div v-for="(item,index) in payMentData" :key='index' class="mt10">
+					<div>
 						<span v-if="item.PaymentState==1">支付宝</span>
 						<span v-if="item.PaymentState==2">微信</span>
 					</div>
-					<img :src="'/'+item.Image" style="width: 150px;">
+					<img :src="$IMG_URL_BACK+item.Image" style="width: 150px;margin-top: 10px;">
 				</div>
 			</div>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="payClose">关闭</el-button>
+				<el-button @click="payClose">确定</el-button>
 			</div>
 		</el-dialog>
 
@@ -353,17 +353,6 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
-							<el-form-item label='订单类型：'>
-								<span v-if="viewOrderData.ServiceType==1">评后返（代返）</span>
-								<span v-if="viewOrderData.ServiceType==2">评后返（自返）</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8">
-							<el-form-item label='国家：'>
-								<span>{{viewOrderData.CountryName}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8">
 							<el-form-item label='店铺名称：'>
 								<span>{{viewOrderData.ShopName}}</span>
 							</el-form-item>
@@ -376,11 +365,6 @@
 						<el-col :span="8">
 							<el-form-item label='产品ASIN：'>
 								<span>{{viewOrderData.Asin}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8">
-							<el-form-item label='产品价格：'>
-								<span>{{viewOrderData.symbol}}{{viewOrderData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
@@ -430,13 +414,29 @@
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label='关键词类型：'>
-								<span v-if="viewOrderData.KeywordType==1">产品关键词</span>
-								<span v-if="viewOrderData.KeywordType==2">CPC关键词</span>
+								<span v-if="viewOrderData.KeyWordType==1">产品关键词</span>
+								<span v-if="viewOrderData.KeyWordType==2">CPC关键词</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label='关键词：'>
-								<span>{{viewOrderData.ProductKeyword}}</span>
+								<span>{{viewOrderData.ProductKeyWord}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='订单类型：'>
+								<span v-if="viewOrderData.ServiceType==1">评后返（代返）</span>
+								<span v-if="viewOrderData.ServiceType==2">评后返（自返）</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='国家：'>
+								<span>{{viewOrderData.CountryName}}</span>
+							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<el-form-item label='产品价格：'>
+								<span>{{viewOrderData.symbol}} {{viewOrderData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
@@ -446,12 +446,12 @@
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label='任务开始时间：'>
-								<span>{{viewOrderData.StartTimes}}</span>
+								<span>{{viewOrderData.StartTime}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label='任务结束时间：'>
-								<span>{{viewOrderData.EndTimes}}</span>
+								<span>{{viewOrderData.EndTime}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
@@ -541,7 +541,7 @@
 				payMentData: [], //支付方式数据
 				searchForm: {
 					searchWords: '',
-					state: '',
+					state: 0,
 					country: [],
 					time: []
 				},
@@ -551,7 +551,7 @@
 				yfp: 0, //已分配
 				ywc: 0, //已完成
 				yqx: 0, //已取消
-				addOrderModal: false,
+				orderModal: false,
 				orderForm: {
 					CountryId: '',
 					ServiceType: '', //订单类型
@@ -658,7 +658,7 @@
 					ProductPosition: [{
 						required: true,
 						message: '请选择留评比例',
-						trigger: 'blur'
+						trigger: 'change'
 					}],
 					ProductKeyword: [{
 						required: true,
@@ -726,13 +726,13 @@
 					countryIdx: _this.searchForm.country,
 					statetime: time1,
 					endtime: time2,
-					pageNum: _this.pageIndex,
-					pagesize: _this.pageSize
+					pageIndex: _this.pageIndex,
+					pageSize: _this.pageSize
 				}
 				orderList(params).then(res => {
 					_this.listLoading = false
-					_this.tableData = res.list
-					_this.total = Number(res.total)
+					_this.tableData = res.Entity
+					_this.total = Number(res.TotalCount)
 				}).catch((e) => {})
 			},
 
@@ -747,30 +747,27 @@
 					time2 = time[1]
 				}
 				let params = {
-					Id: sessionStorage.getItem('userId'),
+					userId: sessionStorage.getItem('userId'),
 					kWord: _this.searchForm.searchWords,
 					countryIdx: _this.searchForm.country,
 					statetime: time1,
 					endtime: time2
 				}
 				orderStateNum(params).then(res => {
-					_this.all = Number(res[0].TotalCount) //全部
-					_this.dqr = Number(res[0].TotalToBeParker) //待确认
-					_this.dfp = Number(res[0].TotalToBeAllocated) //待分配
-					_this.yfp = Number(res[0].TotalAlreadyAllocated) //已分配
-					_this.ywc = Number(res[0].TotalCompleted) //已完成
-					_this.yqx = Number(res[0].TotalCancel) //已取消
+					_this.all = Number(res.TotalCount) //全部
+					_this.dqr = Number(res.OrderStateInOne) //待确认
+					_this.dfp = Number(res.OrderStateInTwo) //待分配
+					_this.yfp = Number(res.OrderStateInThree) //已分配
+					_this.ywc = Number(res.OrderStateInFour) //已完成
+					_this.yqx = Number(res.OrderStateInFive) //已取消
 				}).catch((e) => {})
 			},
 
 			//获取国家数据
 			getCountryData() {
 				let _this = this
-				let param = {
-					Id: sessionStorage.getItem('userId')
-				}
-				countryList(param).then((res) => {
-					_this.countryData = res.list
+				countryList().then((res) => {
+					_this.countryData = res
 				}).catch(err => {})
 			},
 
@@ -778,7 +775,7 @@
 			getRateData() {
 				let _this = this
 				rateList().then((res) => {
-					_this.rateData = res.list
+					_this.rateData = res
 				}).catch(err => {})
 			},
 
@@ -786,7 +783,7 @@
 			getFeeData() {
 				let _this = this
 				feeList().then((res) => {
-					_this.feeData = res.list
+					_this.feeData = res
 				}).catch(err => {})
 			},
 
@@ -794,7 +791,7 @@
 			getAddFeeData() {
 				let _this = this
 				addFeeList().then((res) => {
-					_this.addFeeData = res.list
+					_this.addFeeData = res
 				}).catch(err => {})
 			},
 
@@ -830,6 +827,9 @@
 			//切换国家
 			changeCountry() {
 				let _this = this
+				_this.symbol = ''
+				_this.rate = ''
+				_this.fee = ''
 				_this.orderForm.ProductPosition = ''
 				_this.getRateSymbol()
 				_this.getBiliData()
@@ -865,13 +865,13 @@
 			// 创建订单弹窗
 			createOrder() {
 				let _this = this
-				_this.addOrderModal = true
+				_this.orderModal = true
 			},
 
 			// 再来一单(再次创建订单)
 			createOrderAgain(index, row) {
 				let _this = this
-				_this.addOrderModal = true
+				_this.orderModal = true
 
 				//获取订单数据回显
 				_this.orderForm.ServiceType = row.ServiceType.toString()
@@ -885,12 +885,12 @@
 				_this.orderForm.Place = row.Place
 				_this.orderForm.ProductScore = row.ProductScore
 				_this.orderForm.ProductPictures = row.ProductPictures
-				_this.orderForm.KeywordType = row.KeywordType.toString()
-				_this.orderForm.ProductKeyword = row.ProductKeyword
+				_this.orderForm.KeywordType = row.KeyWordType.toString()
+				_this.orderForm.ProductKeyword = row.ProductKeyWord
 				_this.orderForm.ProductPosition = row.ProductPosition
 				_this.orderForm.Number = row.Number
-				_this.orderForm.StartTime = row.StartTimes
-				_this.orderForm.EndTime = row.EndTimes
+				_this.orderForm.StartTime = row.StartTime
+				_this.orderForm.EndTime = row.EndTime
 				_this.orderForm.Remarks = row.Remarks
 				_this.imageUrl = row.ProductPictures
 				_this.getRateSymbol() //汇率货币符号
@@ -902,7 +902,7 @@
 			// 创建订单关闭
 			closeModel() {
 				let _this = this
-				_this.addOrderModal = false
+				_this.orderModal = false
 				_this.$refs['orderForm'].resetFields()
 				_this.addFee = 0
 				_this.fee = 0
@@ -957,10 +957,11 @@
 
 						addOrder(param).then((res) => {
 							_this.btnLoading = false
+							_this.payMoney = _this.allTotal
 							_this.closeModel()
 							_this.showPay()
-							_this.allOrderList()
-							_this.allOrderStatus()
+							_this.getAllData()
+							_this.getOrderStateNum()
 						}).catch((err) => {})
 					}
 				})
@@ -973,18 +974,19 @@
 					Id: sessionStorage.getItem('userId')
 				}
 				userInfo(params).then(res => {
-					_this.balance = res[0].accountbalance
+					_this.balance = Number(res.AccountBalance)
 				}).catch((e) => {})
 			},
 
 			//打开付款弹窗
 			showPay() {
 				let _this = this
-				_this.payMoney = _this.allTotal
 				_this.getBalance()
-				_this.payModel = true
+				setTimeout(() => {
+					_this.payModel = true
+				}, 600)
 				payMent().then(res => {
-					_this.payMentData = res.list
+					_this.payMentData = res
 				}).catch(err => {})
 			},
 
@@ -993,6 +995,7 @@
 				let _this = this
 				_this.payModel = false
 				_this.balance = 0
+				_this.payMoney = 0
 				_this.payMentData = []
 			},
 
@@ -1028,11 +1031,12 @@
 					type: 'warning'
 				}).then(() => {
 					let params = {
-						Id: row.Id
+						Id: row.Id,
+						UserId: sessionStorage.getItem('userId')
 					}
 					orderState(params).then((res) => {
 						_this.getAllData()
-					})
+					}).catch(() => {})
 				}).catch(() => {})
 			},
 
@@ -1054,8 +1058,8 @@
 
 			// 图片上传
 			handleAvatarSuccess(res, file) {
-				if (res.Data != '') {
-					this.orderForm.ProductPictures = res.Data
+				if (res.info) {
+					this.orderForm.ProductPictures = res.info
 				}
 				this.imageUrl = URL.createObjectURL(file.raw);
 				this.$message.success('产品图片上传成功！')
@@ -1072,7 +1076,7 @@
 				if (!isJPG && !isPNG && !isGIF && !isBMP) {
 					this.$message.error('上传图片必须是JPG/PNG/GIF/BMP 格式!');
 				} else if (!isLt5M) {
-					this.$message.error('上传图片大小不能超过 5MB!');
+					this.$message.error('上传图片大小不能超过 5M!');
 				}
 				return (isJPG || isPNG || isGIF || isBMP) && isLt5M;
 			},
@@ -1163,7 +1167,7 @@
 					},
 					{
 						title: '关键词',
-						key: 'ProductKeyword',
+						key: 'ProductKeyWord',
 						type: 'text'
 					},
 					{

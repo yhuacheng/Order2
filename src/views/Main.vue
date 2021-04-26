@@ -67,22 +67,22 @@
 			<el-col :md="6">
 				<el-card class="mt30">
 					<div slot="header">
-						<span>汇率 / 服务费 / 增值费 公示</span>
+						<span>汇率 / 服务费 / 增值费</span>
 					</div>
 					<div class="tab-title">汇率</div>
-					<el-table :data="rateData" border style="width: 100%">
+					<el-table :data="rateData" v-loading="listLoading1" border style="width: 100%">
 						<el-table-column prop="CurrencyName" label="币种" align="center"></el-table-column>
 						<el-table-column prop="CurrencySymbol" label="符号" align="center"></el-table-column>
 						<el-table-column prop="ExchangeRate" label="汇率" align="center"></el-table-column>
 					</el-table>
 					<div class="tab-title mt20">服务费</div>
-					<el-table :data="feeData" border style="width: 100%">
+					<el-table :data="feeData" v-loading="listLoading2" border style="width: 100%">
 						<el-table-column prop="CountryName" label="国家" align="center"></el-table-column>
-						<el-table-column prop="Probability" label="留评率" align="center" width='100'></el-table-column>
-						<el-table-column prop="FeePrice" label="服务费" align="center" width='150'></el-table-column>
+						<el-table-column prop="Probability" label="留评率" align="center"></el-table-column>
+						<el-table-column prop="FeePrice" label="服务费" align="center"></el-table-column>
 					</el-table>
 					<div class="tab-title mt20">增值费</div>
-					<el-table :data="addFeeData" border style="width: 100%">
+					<el-table :data="addFeeData" v-loading="listLoading3" border style="width: 100%">
 						<el-table-column prop="productPrice" label="价格区间" align="center">
 							<template slot-scope="scope">
 								{{scope.row.Start}} - {{scope.row.Ent}}
@@ -117,6 +117,9 @@
 				cancel: 0,
 				balance: 0,
 				notice: '',
+				listLoading1: false,
+				listLoading2: false,
+				listLoading3: false,
 				rateData: [],
 				feeData: [],
 				addFeeData: []
@@ -152,14 +155,13 @@
 					Id: sessionStorage.getItem('userId')
 				}
 				userInfo(params).then(res => {
-					_this.balance = res.AccountBalance
+					_this.balance = Number(res.AccountBalance)
 				}).catch((e) => {})
 			},
 
 			// 获取公告数据
 			getNotice() {
 				let _this = this
-				_this.listLoading = true
 				let params = {}
 				notice(params).then(res => {
 					_this.notice = res[0].Notice
@@ -169,10 +171,12 @@
 			//获取汇率数据
 			getRateData() {
 				let _this = this
+				_this.listLoading1 = true
 				rateList().then((res) => {
-					let data = res.list
-					let unData = _this.unique(data, 'CurrencyName')
-					_this.rateData = unData
+					_this.listLoading1 = false
+					let data = res
+					let unData = _this.unique(data, 'CountryId')
+					_this.rateData = data
 				}).catch(err => {})
 			},
 
@@ -190,16 +194,20 @@
 			//获取服务费数据
 			getFeeData() {
 				let _this = this
+				_this.listLoading2 = true
 				feeList().then((res) => {
-					_this.feeData = res.list
+					_this.listLoading2 = false
+					_this.feeData = res
 				}).catch(err => {})
 			},
 
 			//获取增值服务费
 			getAddFeeData() {
 				let _this = this
+				_this.listLoading3 = true
 				addFeeList().then((res) => {
-					_this.addFeeData = res.list
+					_this.listLoading3 = false
+					_this.addFeeData = res
 				}).catch(err => {})
 			}
 

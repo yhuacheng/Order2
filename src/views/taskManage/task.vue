@@ -40,7 +40,8 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出任务</el-button>
+			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-download"></i> 导出任务
+			</el-button>
 			<div class="tagMenu">
 				<el-badge :value="all" type="success" class="item">
 					<el-button size="mini" @click='searchStateData(0)' :class="{'active':searchForm.state==0}">全部
@@ -166,6 +167,80 @@
 			</el-pagination>
 		</el-col>
 
+		<!-- 确认订单 -->
+		<el-dialog title="确认订单" :visible.sync="orderModal" :close-on-click-modal="false" :before-close="closeOrderModal"
+			width="30%">
+			<el-form :model="orderForm" :rules="orderRules" ref="orderForm">
+				<el-form-item label="订单状态：">
+					<el-radio-group v-model="orderForm.orderStatus" @change="orderStateChange">
+						<el-radio label="1">正常</el-radio>
+						<el-radio label="0">异常</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="购买截图：">
+					<el-image v-if="orderForm.buyImage" style="width: 100px;height: 100px;"
+						:src="$IMG_URL_BACK + orderForm.buyImage"
+						:preview-src-list="($IMG_URL_BACK + orderForm.buyImage || '').split(',')"></el-image>
+				</el-form-item>
+				<el-form-item label="购买单号：">
+					<span>{{orderForm.buyNumber}}</span>
+				</el-form-item>
+				<el-form-item label="购买时间：">
+					<span>{{orderForm.buyTime}}</span>
+				</el-form-item>
+				<el-form-item label="购买价格：" prop="buyMoney">
+					<el-input v-model="orderForm.buyMoney" :disabled="orderForm.orderStatus=='0'"></el-input>
+				</el-form-item>
+				<el-form-item label="备注：" prop="remark" v-if="orderForm.orderStatus=='1'">
+					<el-input type="textarea" rows="3" v-model="orderForm.remark"></el-input>
+				</el-form-item>
+				<el-form-item label="异常备注：" prop="orderRemark" v-if="orderForm.orderStatus=='0'">
+					<el-input type="textarea" rows="3" v-model="orderForm.orderRemark"></el-input>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="closeOrderModal">关闭</el-button>
+				<el-button type="primary" @click='confirmOrderSubmit' :loading="btnLoading">确认</el-button>
+			</span>
+		</el-dialog>
+
+		<!--确认评价-->
+		<el-dialog :title="commentTitle" :visible.sync="commentModel" :close-on-click-modal="false"
+			:before-close="closeCommentModel" width="30%">
+			<el-form :model="commentForm" :rules="commentRules" ref="commentForm">
+				<el-form-item label="返款账号：" v-if="serviceType==2">
+					<span>{{commentForm.PPaccount}}</span>
+				</el-form-item>
+				<el-form-item label="评价链接：">
+					<span>{{commentForm.productLink}}</span>
+				</el-form-item>
+				<el-form-item label="评价截图：">
+					<el-image v-if="commentForm.ProductImage" style="width: 100px;height: 100px;"
+						:src="$IMG_URL_BACK + commentForm.ProductImage"
+						:preview-src-list="($IMG_URL_BACK + commentForm.ProductImage || '').split(',')"></el-image>
+				</el-form-item>
+				<div v-if="serviceType==2">
+					<el-form-item label='返款截图：' class="mt20 p-img">
+						<el-upload class="avatar-uploader" name="image" :action="uploadUrl" :show-file-list="false"
+							:on-success="handleAvatarSuccess" :on-error="handleError"
+							:before-upload="beforeAvatarUpload" accept="image/jpeg,image/png,image/gif,image/bmp">
+							<img v-if="imageUrl" :src="imageUrl" class="avatar">
+							<i v-else class="el-icon-plus avatar-uploader-icon"></i>
+						</el-upload>
+						<el-input v-show="false" v-model='commentForm.ProductPictures'></el-input>
+					</el-form-item>
+					<!-- 编号小于100018是公司内人 -->
+					<el-form-item label="返款金额：" prop="backMoney" v-if="loginUserId<=100018">
+						<el-input v-model="commentForm.backMoney"></el-input>
+					</el-form-item>
+				</div>
+			</el-form>
+			<span slot='footer' class='dialog-footer'>
+				<el-button @click="closeCommentModel">关闭</el-button>
+				<el-button type="primary" @click='confirmCommentSubmit' :loading="btnLoading">确认</el-button>
+			</span>
+		</el-dialog>
+
 		<!-- 任务查看 -->
 		<el-dialog width="70%" :append-to-body="true" :title="title" :visible.sync="viewModal"
 			:close-on-click-modal="false">
@@ -222,7 +297,7 @@
 						<el-col :span="8" v-if="viewTaskData.ServiceType == '2'">
 							<el-form-item label='预计价格：'>
 								<span
-									v-show="viewTaskData.ProductPrice!=null"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.ProductPrice}}</span>
+									v-show="viewTaskData.ProductPrice"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
@@ -360,80 +435,6 @@
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="viewModal=false">关 闭</el-button>
 			</div>
-		</el-dialog>
-
-		<!-- 确认订单 -->
-		<el-dialog title="确认订单" :visible.sync="orderModal" :close-on-click-modal="false" :before-close="closeOrderModal"
-			width="30%">
-			<el-form :model="orderForm" :rules="orderRules" ref="orderForm">
-				<el-form-item label="订单状态：">
-					<el-radio-group v-model="orderForm.orderStatus" @change="orderStateChange">
-						<el-radio label="1">正常</el-radio>
-						<el-radio label="0">异常</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="购买截图：">
-					<el-image v-if="orderForm.buyImage" style="width: 100px;height: 100px;"
-						:src="$IMG_URL_BACK + orderForm.buyImage"
-						:preview-src-list="($IMG_URL_BACK + orderForm.buyImage || '').split(',')"></el-image>
-				</el-form-item>
-				<el-form-item label="购买单号：">
-					<span>{{orderForm.buyNumber}}</span>
-				</el-form-item>
-				<el-form-item label="购买时间：">
-					<span>{{orderForm.buyTime}}</span>
-				</el-form-item>
-				<el-form-item label="购买价格：" prop="buyMoney">
-					<el-input v-model="orderForm.buyMoney" :disabled="orderForm.orderStatus=='0'"></el-input>
-				</el-form-item>
-				<el-form-item label="备注：" prop="remark" v-if="orderForm.orderStatus=='1'">
-					<el-input type="textarea" rows="3" v-model="orderForm.remark"></el-input>
-				</el-form-item>
-				<el-form-item label="异常备注：" prop="orderRemark" v-if="orderForm.orderStatus=='0'">
-					<el-input type="textarea" rows="3" v-model="orderForm.orderRemark"></el-input>
-				</el-form-item>
-			</el-form>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="closeOrderModal">关闭</el-button>
-				<el-button type="primary" @click='confirmOrderSubmit' :loading="btnLoading">确认</el-button>
-			</span>
-		</el-dialog>
-
-		<!--确认评价-->
-		<el-dialog :title="commentTitle" :visible.sync="commentModel" :close-on-click-modal="false"
-			:before-close="closeCommentModel" width="30%">
-			<el-form :model="commentForm" :rules="commentRules" ref="commentForm">
-				<el-form-item label="返款账号：" v-if="serviceType==2">
-					<span>{{commentForm.PPaccount}}</span>
-				</el-form-item>
-				<el-form-item label="评价链接：">
-					<span>{{commentForm.productLink}}</span>
-				</el-form-item>
-				<el-form-item label="评价截图：">
-					<el-image v-if="commentForm.ProductImage" style="width: 100px;height: 100px;"
-						:src="$IMG_URL_BACK + commentForm.ProductImage"
-						:preview-src-list="($IMG_URL_BACK + commentForm.ProductImage || '').split(',')"></el-image>
-				</el-form-item>
-				<div v-if="serviceType==2">
-					<el-form-item label='返款截图：' class="mt20 p-img">
-						<el-upload class="avatar-uploader" name="image" :action="uploadUrl" :show-file-list="false"
-							:on-success="handleAvatarSuccess" :on-error="handleError"
-							:before-upload="beforeAvatarUpload" accept="image/jpeg,image/png,image/gif,image/bmp">
-							<img v-if="imageUrl" :src="imageUrl" class="avatar">
-							<i v-else class="el-icon-plus avatar-uploader-icon"></i>
-						</el-upload>
-						<el-input v-show="false" v-model='commentForm.ProductPictures'></el-input>
-					</el-form-item>
-					<!-- 编号小于100018是公司内人 -->
-					<el-form-item label="返款金额：" prop="backMoney" v-if="loginUserId<=100018">
-						<el-input v-model="commentForm.backMoney"></el-input>
-					</el-form-item>
-				</div>
-			</el-form>
-			<span slot='footer' class='dialog-footer'>
-				<el-button @click="closeCommentModel">关闭</el-button>
-				<el-button type="primary" @click='confirmCommentSubmit' :loading="btnLoading">确认</el-button>
-			</span>
 		</el-dialog>
 
 	</section>
@@ -617,11 +618,8 @@
 			//获取国家数据
 			getCountryData() {
 				let _this = this
-				let param = {
-					Id: sessionStorage.getItem('userId')
-				}
-				countryList(param).then((res) => {
-					_this.countryData = res.list
+				countryList().then((res) => {
+					_this.countryData = res
 				}).catch(err => {})
 			},
 
