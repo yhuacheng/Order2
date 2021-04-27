@@ -49,5 +49,6 @@ export const addFeeList = (params) => get('/api/IncrementServiceFee/GetIncrement
 
 export const takeMoneyList = (params) => get('/api/DrawMoney/GetUserWithdrawal', params) //提现列表
 export const takeMoneyAdd = (params) => post('/api/DrawMoney/UserWithdrawal', params) //提现新增
+export const noDoMoney = (params) => get('/api/DrawMoney/GetMoney', params) //提现待处理金额总和(配合余额计算出可提现金额)
 
-export const moneyList = (params) => get('/api/CustomerFinance/GetCustomerFinance', params) //我的账单
+export const moneyList = (params) => get('/api/CustomerFinance/GetPayStateOne', params) //我的账单

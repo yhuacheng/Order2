@@ -20,18 +20,25 @@
 					<el-button @click="searchData">查询</el-button>
 					<el-button @click="resetSearch">重置</el-button>
 				</el-form-item>
+				<el-form-item label="账户余额"
+					style="border: 1px solid #E6A23C;border-radius: 4px;padding: 0 15px;height: 30px;line-height: 30px;">
+					<span class="success fz16 bold">{{balance}}</span>
+				</el-form-item>
+				<el-tooltip content="可用余额 = 账户余额 - 待处理提现金额" placement="top">
+					<el-form-item label="可用余额"
+						style="border: 1px solid #F56C6C;border-radius: 4px;padding: 0 15px;height: 30px;line-height: 30px;">
+						<span class="success fz16 bold">{{OKbalance}}</span>
+					</el-form-item>
+				</el-tooltip>
 				<el-form-item>
-					<span v-if="balance<0">
+					<span v-if="OKbalance>0">
 						<el-button type="primary" @click="handtakeModal">申请提现</el-button>
 					</span>
 					<span v-else>
-						<el-tooltip content="余额不足，不可提现" placement="top" effect="light">
+						<el-tooltip content="可用余额不足，不可提现" placement="top">
 							<el-button type="info">申请提现</el-button>
 						</el-tooltip>
 					</span>
-				</el-form-item>
-				<el-form-item label="账户余额" style="border: 1px solid #E6A23C;border-radius: 4px;padding: 0 15px;">
-					<span class="success fz16 bold">{{balance}}</span>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -45,12 +52,12 @@
 			<el-table-column prop="RemoveMoenyTime" label="申请时间" align="center"></el-table-column>
 			<el-table-column prop="BankAccount" label="银行账号" align="center"></el-table-column>
 			<el-table-column prop="Bank" label="开户银行" align="center"></el-table-column>
-			<el-table-column prop="BankName" label="开户名" align="center"></el-table-column>
-			<el-table-column prop="State" label="状态" align="center">
+			<el-table-column prop="BankName" label="开户姓名" align="center"></el-table-column>
+			<el-table-column prop="RemoveMoenyStae" label="状态" align="center">
 				<template v-slot="scope">
-					<span v-if="scope.row.State===1">处理中</span>
-					<span class="success" v-if="scope.row.State===2">提现成功</span>
-					<span class="danger" v-if="scope.row.State===3">提现失败</span>
+					<span v-if="scope.row.RemoveMoenyStae===1">待处理</span>
+					<span class="success" v-if="scope.row.RemoveMoenyStae===2">提现成功</span>
+					<span class="danger" v-if="scope.row.RemoveMoenyStae===3">提现失败</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -58,7 +65,7 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-pagination style="float: right;" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-				:current-page="pageNum" :page-sizes="[10, 20, 50, 100]" :page-size="10"
+				:current-page="pageIndex" :page-sizes="[10, 20, 50, 100]" :page-size="10"
 				layout="total, sizes, prev, pager, next, jumper" :total="total">
 			</el-pagination>
 		</el-col>
@@ -67,6 +74,10 @@
 		<el-dialog :title="title" :visible.sync="editModal" :close-on-click-modal="false" :before-close="closeModal"
 			width="30%">
 			<el-form :model="editForm" label-width="80px" :rules="rules" ref="editForm">
+				<el-form-item label="可用余额">
+					<span class="danger">{{OKbalance}}</span>
+					<span class="warning ml10">(可用余额 = 账户余额 - 待处理提现金额)</span>
+				</el-form-item>
 				<el-form-item label="提现金额" prop="money">
 					<el-input v-model="editForm.money"></el-input>
 				</el-form-item>
@@ -76,7 +87,7 @@
 				<el-form-item label="开户银行" prop="bank">
 					<el-input v-model="editForm.bank"></el-input>
 				</el-form-item>
-				<el-form-item label="开户名" prop="name">
+				<el-form-item label="开户姓名" prop="name">
 					<el-input v-model="editForm.name"></el-input>
 				</el-form-item>
 			</el-form>
@@ -93,7 +104,8 @@
 	import {
 		takeMoneyList,
 		takeMoneyAdd,
-		userInfo
+		userInfo,
+		noDoMoney
 	} from '@/api/api'
 
 	export default {
@@ -105,15 +117,15 @@
 					return callback(new Error('提现金额不能为空'));
 				} else if (!reg.test(value)) {
 					callback(new Error('提现金额格式不正确'));
-				} else if (Number(value) > Number(this.balance)) {
-					callback(new Error('提现金额不能大于余额'));
+				} else if (Number(value) > Number(this.OKbalance)) {
+					callback(new Error('提现金额不能大于剩余可提现金额'));
 				} else {
 					callback();
 				}
 			};
 			return {
 				title: '',
-				pageNum: 1,
+				pageIndex: 1,
 				pageSize: 10,
 				total: 0,
 				doType: '',
@@ -157,11 +169,12 @@
 					}],
 					name: [{
 						required: true,
-						message: '请输入开户名',
+						message: '请输入开户姓名',
 						trigger: 'blur'
 					}]
 				},
-				balance: 0
+				balance: 0,
+				OKbalance: 0
 			}
 		},
 		created() {
@@ -186,13 +199,13 @@
 					endtime: time2,
 					kWord: _this.searchForm.keyWord,
 					state: _this.searchForm.state,
-					pageNum: _this.pageNum,
-					pagesize: _this.pageSize
+					pageIndex: _this.pageIndex,
+					pageSize: _this.pageSize
 				}
 				takeMoneyList(params).then(res => {
 					_this.listLoading = false
-					_this.tableData = res.list
-					_this.total = Number(res.total)
+					_this.tableData = res.Entity
+					_this.total = Number(res.TotalCount)
 				}).catch((e) => {})
 			},
 
@@ -203,7 +216,20 @@
 					Id: sessionStorage.getItem('userId')
 				}
 				userInfo(params).then(res => {
-					_this.balance = res[0].accountbalance
+					_this.balance = Number(res.AccountBalance)
+					_this.getNoDoMoney()
+				}).catch((e) => {})
+			},
+
+			// 获取提现待处理总金额并计算剩余可提现金额
+			getNoDoMoney() {
+				let _this = this
+				let params = {
+					userId: sessionStorage.getItem('userId')
+				}
+				noDoMoney(params).then(res => {
+					let money = Number(res.Money)
+					_this.OKbalance = _this.balance - money
 				}).catch((e) => {})
 			},
 
@@ -211,7 +237,7 @@
 			handtakeModal() {
 				let _this = this
 				_this.editModal = true
-				_this.title = '提现申请'
+				_this.title = '申请提现'
 			},
 
 			//提现新增
@@ -221,7 +247,7 @@
 					if (valid) {
 						_this.btnLoading = true
 						let params = {
-							RemoveMoney: _this.editForm.money,
+							removeMoney: _this.editForm.money,
 							BankAccount: _this.editForm.account,
 							Bank: _this.editForm.bank,
 							BankName: _this.editForm.name,
@@ -231,6 +257,7 @@
 							_this.btnLoading = false
 							_this.closeModal()
 							_this.getData()
+							_this.getBalance()
 						}).catch((e) => {
 							_this.btnLoading = false
 						})
@@ -255,14 +282,14 @@
 			//查询
 			searchData() {
 				let _this = this
-				_this.pageNum = 1
+				_this.pageIndex = 1
 				_this.getData()
 			},
 
 			//重置
 			resetSearch() {
 				let _this = this
-				_this.pageNum = 1
+				_this.pageIndex = 1
 				_this.searchForm.time = []
 				_this.searchForm.keyWord = ''
 				_this.searchForm.state = 0
@@ -282,7 +309,7 @@
 			},
 			handleCurrentChange(val) {
 				let _this = this
-				_this.pageNum = val
+				_this.pageIndex = val
 				_this.getData()
 			}
 

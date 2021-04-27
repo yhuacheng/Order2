@@ -30,7 +30,7 @@
 		<el-col :span="24" class="toolbar">
 			<el-button type="primary" size="small" @click="createOrder"><i class="el-icon-edit-outline"></i> 创建订单
 			</el-button>
-			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-download"></i> 导出订单
+			<el-button type="warning" size="small" @click="exportExcel"><i class="el-icon-upload2"></i> 导出订单
 			</el-button>
 			<div class="tagMenu">
 				<el-badge :value="all" type="success" class="item">
