@@ -118,7 +118,7 @@
 				} else if (!reg.test(value)) {
 					callback(new Error('提现金额格式不正确'));
 				} else if (Number(value) > Number(this.OKbalance)) {
-					callback(new Error('提现金额不能大于剩余可提现金额'));
+					callback(new Error('提现金额不能大于可用余额'));
 				} else {
 					callback();
 				}

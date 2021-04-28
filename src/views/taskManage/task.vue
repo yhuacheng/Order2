@@ -98,7 +98,7 @@
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="OrderProductPictures" label="产品图" align="center">
+			<el-table-column prop="OrderProductPictures" label="产品图" align="center" width="70">
 				<template slot-scope="scope">
 					<el-image style="width: 40px;height: 40px;" v-if="scope.row.OrderProductPictures"
 						:src="'/'+scope.row.OrderProductPictures">
@@ -116,12 +116,12 @@
 			</el-table-column>
 			<el-table-column prop="OrderShopName" label="店铺" align="center" :show-overflow-tooltip='true'>
 			</el-table-column>
-			<el-table-column prop="Asin" label="ASIN" align="center" width="110"></el-table-column>
+			<el-table-column prop="Asin" label="ASIN" align="center" width="125"></el-table-column>
 			<el-table-column prop="AmazonNumber" label="购买单号" align="center"></el-table-column>
 			<el-table-column prop="AmazonProductPrice" label="购买价格" align="center"></el-table-column>
-			<el-table-column prop="BuyTime" label="购买时间" align="center" width="100"></el-table-column>
+			<el-table-column prop="BuyTime" label="购买时间" align="center" width="90"></el-table-column>
 			<el-table-column prop="PayAccount" label="返款账号" align="center"></el-table-column>
-			<el-table-column prop="DealTime" label="返款时间" align="center" width="100"></el-table-column>
+			<el-table-column prop="DealTime" label="返款时间" align="center" width="90"></el-table-column>
 			<el-table-column prop="TaskState" label="状态" align="center">
 				<template slot-scope="scope">
 					<span v-if="scope.row.TaskState==1">待分配</span>
@@ -135,27 +135,16 @@
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="145">
-				<!-- <template slot-scope="scope">
+				<template slot-scope="scope">
 					<el-button size="small" v-if="scope.row.TaskState==1" type="danger"
 						@click="cancelHandel(scope.$index,scope.row)">取消</el-button>
 					<el-button size="small" v-if="scope.row.TaskState==3" type="primary"
-						@click="confirmOrder(scope.$index,scope.row)">确认订单</el-button>
+						@click="confirmOrder(scope.$index,scope.row)">确认出单</el-button>
 					<el-button size="small" v-if="scope.row.TaskState==5" type="success"
 						@click="evalEdit(scope.$index,scope.row,1)">确认评价</el-button>
 					<el-button size="small" v-if="scope.row.TaskState==6 && scope.row.ServiceType=='2'" type="success"
 						@click="evalEdit(scope.$index,scope.row,2)">补充返款信息</el-button>
-				</template> -->
-
-				<template slot-scope="scope">
-					<el-button size="small" type="danger" @click="cancelHandel(scope.$index,scope.row)">取消</el-button>
-					<el-button size="small" type="primary" @click="confirmOrder(scope.$index,scope.row)">确认订单
-					</el-button>
-					<el-button size="small" type="success" @click="confirmComment(scope.$index,scope.row,1)">确认评价
-					</el-button>
-					<el-button size="small" type="success" @click="confirmComment(scope.$index,scope.row,2)">补充返款信息
-					</el-button>
 				</template>
-
 			</el-table-column>
 		</el-table>
 
@@ -554,15 +543,15 @@
 				let time1 = ''
 				let time2 = ''
 				if (buyTime != '' && buyTime != null) {
-					time1 = time[0]
-					time2 = time[1]
+					time1 = buyTime[0]
+					time2 = buyTime[1]
 				}
 				let backTime = _this.searchForm.time2
 				let time3 = ''
 				let time4 = ''
 				if (backTime != '' && backTime != null) {
-					time3 = time[0]
-					time4 = time[1]
+					time3 = backTime[0]
+					time4 = backTime[1]
 				}
 				let params = {
 					userId: sessionStorage.getItem('userId'),
@@ -570,48 +559,57 @@
 					state: _this.searchForm.state,
 					type: _this.searchForm.type,
 					countryIdx: _this.searchForm.country,
-					statetime: time1,
-					endtime: time2,
-					// backstatetime: time3,
-					// backendtime: time4,
-					pageNum: _this.pageIndex,
-					pagesize: _this.pageSize
+					sbuyTime: time1,
+					ebuyTime: time2,
+					sdealTime: time3,
+					edealTime: time4,
+					pageIndex: _this.pageIndex,
+					pageSize: _this.pageSize
 				}
 				taskList(params).then(res => {
 					_this.listLoading = false
-					_this.tableData = res.list
-					_this.total = Number(res.total)
+					_this.tableData = res.Entity
+					_this.total = Number(res.TotalCount)
 				}).catch((e) => {})
 			},
 
 			//获取不同状态的订单数量
 			getTaskStateNum() {
 				let _this = this
-				let time = _this.searchForm.time
+				let buyTime = _this.searchForm.time
 				let time1 = ''
 				let time2 = ''
-				if (time != '' && time != null) {
-					time1 = time[0]
-					time2 = time[1]
+				if (buyTime != '' && buyTime != null) {
+					time1 = buyTime[0]
+					time2 = buyTime[1]
+				}
+				let backTime = _this.searchForm.time2
+				let time3 = ''
+				let time4 = ''
+				if (backTime != '' && backTime != null) {
+					time3 = backTime[0]
+					time4 = backTime[1]
 				}
 				let params = {
 					userId: sessionStorage.getItem('userId'),
 					kWord: _this.searchForm.searchWords,
-					countryIdx: _this.searchForm.country,
 					type: _this.searchForm.type,
-					statetime: time1,
-					endtime: time2
+					countryIdx: _this.searchForm.country,
+					sbuyTime: time1,
+					ebuyTime: time2,
+					sdealTime: time3,
+					edealTime: time4,
 				}
 				taskStateNum(params).then(res => {
-					_this.all = Number(res.list[0].TotalCount) //全部
-					_this.dfp = Number(res.list[0].OrderStateInOne) //待分配
-					_this.dgm = Number(res.list[0].OrderStateInTwo) //待购买
-					_this.dqrcd = Number(res.list[0].OrderStateInThree) //待确认出单
-					_this.dpj = Number(res.list[0].OrderStateInFour) //待评价
-					_this.dqrpj = Number(res.list[0].OrderStateInFive) //待确认评价
-					_this.ywc = Number(res.list[0].OrderStateInSix) //已完成
-					_this.yqx = Number(res.list[0].OrderStateInSeven) //已取消
-					_this.error = Number(res.list[0].OrderStateInEight) //异常
+					_this.all = Number(res.TotalCount) //全部
+					_this.dfp = Number(res.OrderStateInOne) //待分配
+					_this.dgm = Number(res.OrderStateInTwo) //待购买
+					_this.dqrcd = Number(res.OrderStateInThree) //待确认出单
+					_this.dpj = Number(res.OrderStateInFour) //待评价
+					_this.dqrpj = Number(res.OrderStateInFive) //待确认评价
+					_this.ywc = Number(res.OrderStateInSix) //已完成
+					_this.yqx = Number(res.OrderStateInSeven) //已取消
+					_this.error = Number(res.OrderStateInEight) //异常
 				}).catch((e) => {})
 			},
 

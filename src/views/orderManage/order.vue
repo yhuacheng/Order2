@@ -323,17 +323,23 @@
 					<span class="ml20">待付金额：</span>
 					<span class="danger">￥{{payMoney}}</span>
 				</div>
-				<div class="mt30">请选择以下方式充值</div>
-				<div v-for="(item,index) in payMentData" :key='index' class="mt10">
-					<div>
+				<div class="mt20">请选择以下方式充值</div>
+				<div v-for="(item,index) in payMentData" :key='index' class="mt20"
+					style="border: 1px dashed #eee;padding: 15px 0;">
+					<div class="warning" style="font-weight: bold;">
 						<span v-if="item.PaymentState==1">支付宝</span>
 						<span v-if="item.PaymentState==2">微信</span>
+						<span v-if="item.PaymentState==3">银行卡</span>
 					</div>
-					<img :src="$IMG_URL_BACK+item.Image" style="width: 150px;margin-top: 10px;">
+					<img v-if="item.Image" :src="$IMG_URL_BACK+item.Image" style="width: 150px;margin-top: 10px;">
+					<div class="mt5">
+						<div v-if="item.PaymentState==3 && item.Remarks">{{item.Remarks}}</div>
+						<div class="mt5"><span>{{item.PaymentName}}</span><span class="ml5">{{item.AccountNumber}}</span></div>
+					</div>
 				</div>
 			</div>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click="payClose">确定</el-button>
+				<el-button @click="payClose">关闭</el-button>
 			</div>
 		</el-dialog>
 

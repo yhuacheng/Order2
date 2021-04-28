@@ -41,8 +41,8 @@
 					</el-col>
 					<el-col :md="3" :xs="12">
 						<el-card shadow="hover" class="item">
-							<el-button class="btn" plain type="danger" size="mini" @click="$router.push('/takeMoney')">
-								提现</el-button>
+							<el-button class="btn" plain type="success" size="mini" @click="addMoneyModal=true">
+								充值</el-button>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
@@ -94,6 +94,29 @@
 			</el-col>
 		</el-row>
 
+		<!-- 充值 -->
+		<el-dialog title="充值" :visible.sync="addMoneyModal" :close-on-click-modal="false" width="20%" center>
+			<div class="txt-c">
+				<div class="mt10">请选择以下方式充值</div>
+				<div v-for="(item,index) in payMentData" :key='index' class="mt20"
+					style="border: 1px dashed #eee;padding: 15px 0;">
+					<div class="warning" style="font-weight: bold;">
+						<span v-if="item.PaymentState==1">支付宝</span>
+						<span v-if="item.PaymentState==2">微信</span>
+						<span v-if="item.PaymentState==3">银行卡</span>
+					</div>
+					<img v-if="item.Image" :src="$IMG_URL_BACK+item.Image" style="width: 150px;margin-top: 10px;">
+					<div class="mt5">
+						<div v-if="item.PaymentState==3 && item.Remarks">{{item.Remarks}}</div>
+						<div class="mt5"><span>{{item.PaymentName}}</span><span class="ml5">{{item.AccountNumber}}</span></div>
+					</div>
+				</div>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="addMoneyModal=false">关闭</el-button>
+			</div>
+		</el-dialog>
+
 	</section>
 </template>
 
@@ -104,7 +127,8 @@
 		notice,
 		rateList,
 		feeList,
-		addFeeList
+		addFeeList,
+		payMent
 	} from '@/api/api'
 
 	export default {
@@ -122,7 +146,9 @@
 				listLoading3: false,
 				rateData: [],
 				feeData: [],
-				addFeeData: []
+				addFeeData: [],
+				addMoneyModal: false,
+				payMentData: []
 			}
 		},
 		created() {
@@ -132,6 +158,7 @@
 			this.getRateData()
 			this.getFeeData()
 			this.getAddFeeData()
+			this.addMoney()
 		},
 		methods: {
 			//获取各状态任务数量
@@ -208,6 +235,14 @@
 				addFeeList().then((res) => {
 					_this.listLoading3 = false
 					_this.addFeeData = res
+				}).catch(err => {})
+			},
+
+			//获取充值方式
+			addMoney() {
+				let _this = this
+				payMent().then(res => {
+					_this.payMentData = res
 				}).catch(err => {})
 			}
 
