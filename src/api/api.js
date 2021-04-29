@@ -36,7 +36,7 @@ export const payMent = (params) => get('/api/Order/GetPayment', params) //支付
 
 export const taskList = (params) => post('/api/Task/GetMyTaskList', params) //任务管理
 export const taskStateNum = (params) => post('/api/Task/MyTaskStates', params) //任务管理状态
-export const taskConfirmOrder = (params) => post('/api/Task/ConfirmTaskThree', params) //任务确认订单
+export const taskConfirmOrder = (params) => post('/api/Task/ConfirmTaskThree', params) //任务确认出单
 export const taskConfirmComment = (params) => post('/api/Task/ConfirmTaskFiveOrSeven', params) //任务确认评价
 
 export const countryList = (params) => get('/api/Country/GetCountry', params) //国家

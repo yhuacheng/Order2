@@ -131,7 +131,7 @@
 					<span v-if="scope.row.TaskState==5" class="primary">待确认评价</span>
 					<span v-if="scope.row.TaskState==6" class="success">已完成</span>
 					<span v-if="scope.row.TaskState==7" class="danger">已取消</span>
-					<span v-if="scope.row.TaskState==8" class="warning">异常</span>
+					<span v-if="scope.row.TaskState==8" class="danger">异常</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="操作" align="center" width="145">
@@ -156,16 +156,10 @@
 			</el-pagination>
 		</el-col>
 
-		<!-- 确认订单 -->
-		<el-dialog title="确认订单" :visible.sync="orderModal" :close-on-click-modal="false" :before-close="closeOrderModal"
+		<!-- 确认出单 -->
+		<el-dialog title="确认出单" :visible.sync="orderModal" :close-on-click-modal="false" :before-close="closeOrderModal"
 			width="30%">
 			<el-form :model="orderForm" :rules="orderRules" ref="orderForm">
-				<el-form-item label="订单状态：">
-					<el-radio-group v-model="orderForm.orderStatus" @change="orderStateChange">
-						<el-radio label="1">正常</el-radio>
-						<el-radio label="0">异常</el-radio>
-					</el-radio-group>
-				</el-form-item>
 				<el-form-item label="购买截图：">
 					<el-image v-if="orderForm.buyImage" style="width: 100px;height: 100px;"
 						:src="$IMG_URL_BACK + orderForm.buyImage"
@@ -177,14 +171,20 @@
 				<el-form-item label="购买时间：">
 					<span>{{orderForm.buyTime}}</span>
 				</el-form-item>
+				<el-form-item label="出单状态：">
+					<el-radio-group v-model="orderForm.orderStatus" @change="orderStateChange">
+						<el-radio label="1">正常</el-radio>
+						<el-radio label="0">异常</el-radio>
+					</el-radio-group>
+				</el-form-item>
 				<el-form-item label="购买价格：" prop="buyMoney">
 					<el-input v-model="orderForm.buyMoney" :disabled="orderForm.orderStatus=='0'"></el-input>
 				</el-form-item>
-				<el-form-item label="备注：" prop="remark" v-if="orderForm.orderStatus=='1'">
+				<el-form-item label="备注：" prop="remark" v-show="orderForm.orderStatus=='1'">
 					<el-input type="textarea" rows="3" v-model="orderForm.remark"></el-input>
 				</el-form-item>
-				<el-form-item label="异常备注：" prop="orderRemark" v-if="orderForm.orderStatus=='0'">
-					<el-input type="textarea" rows="3" v-model="orderForm.orderRemark"></el-input>
+				<el-form-item label="异常备注：" prop="errRemark" v-if="orderForm.orderStatus=='0'">
+					<el-input type="textarea" rows="3" v-model="orderForm.errRemark"></el-input>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
@@ -239,6 +239,14 @@
 				</div>
 				<el-form :model='viewTaskData' ref='viewTaskData' label-width='150px'>
 					<el-row>
+						<el-col :span="24">
+							<el-form-item label='产品图：'>
+								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.OrderProductPictures"
+									:src="'/'+viewTaskData.OrderProductPictures"
+									:preview-src-list="('/'+viewTaskData.OrderProductPictures || '').split(',')">
+								</el-image>
+							</el-form-item>
+						</el-col>
 						<el-col :span="8">
 							<el-form-item label='任务编码：'>
 								<span>{{viewTaskData.OrderNumbers}}</span>
@@ -284,9 +292,9 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="8" v-if="viewTaskData.ServiceType == '2'">
-							<el-form-item label='预计价格：'>
+							<el-form-item label='产品价格：'>
 								<span
-									v-show="viewTaskData.ProductPrice"><span>{{viewTaskData.symbol}}</span>{{viewTaskData.ProductPrice}}</span>
+									v-show="viewTaskData.ProductPrice"><span>{{symbol}}</span>{{viewTaskData.ProductPrice}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
@@ -321,54 +329,56 @@
 						<el-col :span="8">
 							<el-form-item label='购买价格：'>
 								<span v-show="viewTaskData.AmazonProductPrice">
-									<span>{{viewTaskData.symbol}}</span>
+									<span>{{symbol}}</span>
 									{{viewTaskData.AmazonProductPrice}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
-							<el-form-item label='产品运费：'>
-								<span v-show="viewTaskData.Freight"><span>{{viewTaskData.symbol}}</span>
-									{{viewTaskData.Freight}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
-							<el-form-item label='产品税费：'>
-								<span v-show="viewTaskData.Taxation"><span>{{viewTaskData.symbol}}</span>
-									{{viewTaskData.Taxation}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
-							<el-form-item label='其他费用：'>
-								<span v-show="viewTaskData.Other">{{viewTaskData.symbol}}</span>
-								{{viewTaskData.Other}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
-							<el-form-item label='增值费：'>
-								<span>{{viewTaskData.OrderAddedFee}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label='服务费：'>
-								<span>{{viewTaskData.OrderUnitPriceSerCharge}}</span>
+								<span v-show="viewTaskData.AmazonNumber">{{viewTaskData.OrderUnitPriceSerCharge}}</span>
 							</el-form-item>
 						</el-col>
-						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
-							<el-form-item label='汇率：'>
-								<span>{{viewTaskData.OrderExchangeRate}}</span>
-							</el-form-item>
-						</el-col>
-						<el-col :span="8" v-if="viewTaskData.ServiceType==1">
-							<el-form-item label='总额：'>
-								<span style="color: red;" v-show="viewTaskData.Total"><span>￥</span>
-									{{viewTaskData.Total}}</span>
-							</el-form-item>
-						</el-col>
+						<div v-if="viewTaskData.ServiceType==1 && viewTaskData.AmazonNumber">
+							<el-col :span="8">
+								<el-form-item label='产品运费：'>
+									<span v-show="viewTaskData.Freight"><span>{{symbol}}</span>
+										{{viewTaskData.Freight}}</span>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label='产品税费：'>
+									<span v-show="viewTaskData.Taxation"><span>{{symbol}}</span>
+										{{viewTaskData.Taxation}}</span>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label='其他费用：'>
+									<span v-show="viewTaskData.Other">{{symbol}}</span>
+									{{viewTaskData.Other}}</span>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label='增值费：'>
+									<span>{{viewTaskData.OrderAddedFee}}</span>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label='汇率：'>
+									<span>{{viewTaskData.OrderExchangeRate}}</span>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label='总额：'>
+									<span style="color: red;" v-show="viewTaskData.Total"><span>￥</span>
+										{{viewTaskData.Total}}</span>
+								</el-form-item>
+							</el-col>
+						</div>
 						<el-col :span="24">
 							<el-form-item label='购买截图：' prop="BuyImage">
 								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.BuyImage"
-									:src="viewTaskData.BuyImage"
-									:preview-src-list="(viewTaskData.BuyImage || '').split(',')"></el-image>
+									:src="'/' + viewTaskData.BuyImage"
+									:preview-src-list="('/' + viewTaskData.BuyImage || '').split(',')"></el-image>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -393,8 +403,9 @@
 						<el-col :span="24">
 							<el-form-item label='评价截图：' prop="Remarks">
 								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.ProductImage"
-									:src="viewTaskData.ProductImage"
-									:preview-src-list="(viewTaskData.ProductImage || '').split(',')"></el-image>
+									:src="$IMG_URL_BACK+viewTaskData.ProductImage"
+									:preview-src-list="($IMG_URL_BACK+viewTaskData.ProductImage || '').split(',')">
+								</el-image>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -408,14 +419,15 @@
 					<el-row>
 						<el-col :span="24">
 							<el-form-item label='返款金额：'>
-								<span>{{viewTaskData.DealMoeny}}</span>
+								<span
+									v-if="viewTaskData.DealMoeny && viewTaskData.DealMoeny!=0">{{viewTaskData.DealMoeny}}</span>
 							</el-form-item>
 						</el-col>
 						<el-col :span="24">
 							<el-form-item label='返款截图：'>
-								<el-image style="width: 100px;height: 100px;" v-if="viewTaskData.DealIamge"
-									:src="viewTaskData.DealIamge"
-									:preview-src-list="(viewTaskData.DealIamge || '').split(',')"></el-image>
+								<el-image style="width: 80px;" v-if="viewTaskData.DealIamge"
+									:src="'/' + viewTaskData.DealIamge"
+									:preview-src-list="('/' + viewTaskData.DealIamge || '').split(',')"></el-image>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -448,6 +460,7 @@
 				pageIndex: 1,
 				pageSize: 10,
 				total: 0,
+				symbol: '',
 				viewTaskData: {},
 				viewModal: false,
 				listLoading: false,
@@ -498,7 +511,7 @@
 							trigger: 'blur'
 						}
 					],
-					orderRemark: [{
+					errRemark: [{
 						required: true,
 						message: '请输入异常备注',
 						trigger: 'blur'
@@ -625,7 +638,7 @@
 			getRateData() {
 				let _this = this
 				rateList().then((res) => {
-					_this.rateData = res.list
+					_this.rateData = res
 				}).catch(err => {})
 			},
 
@@ -633,9 +646,13 @@
 			viewModalShow(index, row) {
 				let _this = this
 				_this.title = '任务【' + row.OrderNumbers + '】详情'
+				let rateData = _this.rateData
+				for (let x in rateData) {
+					if (rateData[x].CountryId == row.CountryId) {
+						_this.symbol = rateData[x].CurrencySymbol
+					}
+				}
 				_this.viewTaskData = Object.assign({}, row)
-				_this.viewTaskData.BuyImage = '/' + row.BuyImage
-				_this.viewTaskData.ProductImage = '/' + row.ProductImage
 				_this.viewModal = true //获取到数据后显示模态框
 			},
 
@@ -689,9 +706,9 @@
 						}
 						taskConfirmOrder(param).then(res => {
 							_this.btnLoading = false
-							_this.closeSubmit()
+							_this.closeOrderModal()
 							_this.getAllData()
-							_this.getAllStatus()
+							_this.getTaskStateNum()
 						}).catch(error => {
 							_this.btnLoading = false
 						})
@@ -769,7 +786,7 @@
 								_this.btnLoading = false
 								_this.colseCommentModel()
 								_this.getAllData()
-								_this.getAllStatus()
+								_this.getTaskStateNum()
 							}).catch(error => {
 								_this.btnLoading = false
 							})

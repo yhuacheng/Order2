@@ -681,7 +681,7 @@
 						message: '请输入产品位置',
 						trigger: 'blur'
 					}]
-				},
+				}
 			}
 		},
 		created() {

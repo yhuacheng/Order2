@@ -108,7 +108,8 @@
 					<img v-if="item.Image" :src="$IMG_URL_BACK+item.Image" style="width: 150px;margin-top: 10px;">
 					<div class="mt5">
 						<div v-if="item.PaymentState==3 && item.Remarks">{{item.Remarks}}</div>
-						<div class="mt5"><span>{{item.PaymentName}}</span><span class="ml5">{{item.AccountNumber}}</span></div>
+						<div class="mt5"><span>{{item.PaymentName}}</span><span
+								class="ml5">{{item.AccountNumber}}</span></div>
 					</div>
 				</div>
 			</div>
@@ -168,10 +169,10 @@
 					uid: sessionStorage.getItem('userId')
 				}
 				taskSum(params).then(res => {
-					_this.all = Number(res.list[0].TotalCount)
-					_this.doing = Number(res.list[0].HaveInHandByTask)
-					_this.complete = Number(res.list[0].CompleteTask)
-					_this.cancel = Number(res.list[0].CancelTask)
+					_this.all = Number(res.TotalCount)
+					_this.doing = Number(res.OrderStateInOne)
+					_this.complete = Number(res.OrderStateInTwo)
+					_this.cancel = Number(res.OrderStateInThree)
 				}).catch(error => {})
 			},
 
