@@ -52,6 +52,14 @@ $color-aside: #324157; //左侧菜单背景色
 	margin-left: 20px;
 }
 
+.mr15{
+	margin-right: 15px;
+}
+
+.fz10{
+	font-size: 10px;
+}
+
 .f12{
 	font-size: 12px;
 }
@@ -228,7 +236,7 @@ body {
 		}
 
 		.logo-width {
-			width: 230px;
+			width: 200px;
 		}
 
 		.logo-collapse-width {
@@ -253,8 +261,8 @@ body {
       overflow: hidden;
 
       aside {
-      	flex: 0 0 230px;
-      	width: 230px;
+      	flex: 0 0 200px;
+      	width: 200px;
       	.el-menu {
       		height: 100%;
       		background: $color-aside;
@@ -304,8 +312,8 @@ body {
       }
       
       .menu-expanded {
-      	flex: 0 0 230px;
-      	width: 230px;
+      	flex: 0 0 200px;
+      	width: 200px;
       
       	.el-menu {
       		width: 100% !important;
