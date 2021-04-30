@@ -390,9 +390,14 @@
 						</div>
 						<el-col :span="24">
 							<el-form-item label='购买截图：' prop="BuyImage">
-								<el-image style="width: 80px" class="pointer" v-if="viewTaskData.BuyImage"
-									:src="'/' + viewTaskData.BuyImage"
-									:preview-src-list="('/' + viewTaskData.BuyImage || '').split(',')"></el-image>
+								<span v-if="viewTaskData.BuyImage">
+									<span v-for="(item,index) in (viewTaskData.BuyImage || '').split(',')" :key="index"
+										class="mr15">
+										<el-image style="width: 80px" class="pointer" :src="$IMG_URL_BACK + item"
+											:preview-src-list="($IMG_URL_BACK + viewTaskData.BuyImage || '').split(',')">
+										</el-image>
+									</span>
+								</span>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -446,7 +451,8 @@
 						</el-col>
 						<el-col :span="24">
 							<el-form-item label='返款截图：'>
-								<el-image style="width: 80px;" v-if="viewTaskData.DealIamge"
+								<el-image style="width: 80px;"
+									v-if="viewTaskData.DealIamge && viewTaskData.DealIamge != null"
 									:src="'/' + viewTaskData.DealIamge"
 									:preview-src-list="('/' + viewTaskData.DealIamge || '').split(',')"></el-image>
 							</el-form-item>
@@ -793,9 +799,9 @@
 						let type = _this.serviceType
 						let uId = sessionStorage.getItem('userId')
 						let JYimg = _this.commentForm.ProductPictures
-						console.log(JYimg)
 						if (type == '2' && uId <= 100018 && !JYimg) {
-							this.$message.error('自返内单必须上传返款截图！')
+							_this.$message.error('自返内单必须上传返款截图！')
+							_this.btnLoading = false
 						} else {
 							let param = {
 								UserId: uId,
