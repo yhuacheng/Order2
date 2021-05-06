@@ -224,6 +224,7 @@
 							let user = res.UserInfo.split(',')
 							sessionStorage.setItem('userId', user[0])
 							sessionStorage.setItem('userName', user[1])
+							sessionStorage.setItem('token', res.token)
 							_this.btnLoading = false
 							this.$router.push('/main')
 						}).catch((e) => {

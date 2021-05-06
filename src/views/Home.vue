@@ -200,7 +200,7 @@
 				_this.$confirm('确定退出系统吗?', '信息提示', {
 					type: 'warning'
 				}).then(() => {
-					sessionStorage.removeItem('user')
+					sessionStorage.clear()
 					_this.$router.push('/login')
 				}).catch(() => {})
 			},
