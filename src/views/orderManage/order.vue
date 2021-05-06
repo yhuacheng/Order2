@@ -142,9 +142,9 @@
 							<el-col :span="24" :xs="24">
 								<el-form-item label='产品图片' prop='ProductPictures' class="mt20 p-img">
 									<el-upload class="avatar-uploader" name="image"
-										action="/api/Order/GetProductPictures" :show-file-list="false"
-										:on-success="handleAvatarSuccess" :on-error="handleError"
-										:before-upload="beforeAvatarUpload"
+										action="/api/Order/GetProductPictures" :headers="headers"
+										:show-file-list="false" :on-success="handleAvatarSuccess"
+										:on-error="handleError" :before-upload="beforeAvatarUpload"
 										accept="image/jpeg,image/png,image/gif,image/bmp">
 										<img v-if="imageUrl" :src="imageUrl" class="avatar">
 										<i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -334,7 +334,8 @@
 					<img v-if="item.Image" :src="$IMG_URL_BACK+item.Image" style="width: 150px;margin-top: 10px;">
 					<div class="mt5">
 						<div v-if="item.PaymentState==3 && item.Remarks">{{item.Remarks}}</div>
-						<div class="mt5"><span>{{item.PaymentName}}</span><span class="ml5">{{item.AccountNumber}}</span></div>
+						<div class="mt5"><span>{{item.PaymentName}}</span><span
+								class="ml5">{{item.AccountNumber}}</span></div>
 					</div>
 				</div>
 			</div>
@@ -545,6 +546,9 @@
 				addFeeData: [], //增值费数据
 				biliData: [], //留评比例数据
 				payMentData: [], //支付方式数据
+				headers: {
+					auth: sessionStorage.getItem('token')
+				},
 				searchForm: {
 					searchWords: '',
 					state: 0,

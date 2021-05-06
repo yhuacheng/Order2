@@ -118,7 +118,11 @@
 			</el-table-column>
 			<el-table-column prop="Asin" label="ASIN" align="center" width="125"></el-table-column>
 			<el-table-column prop="AmazonNumber" label="购买单号" align="center"></el-table-column>
-			<el-table-column prop="AmazonProductPrice" label="购买价格" align="center"></el-table-column>
+			<el-table-column prop="AmazonProductPrice" label="购买价格" align="center">
+				<template slot-scope="scope">
+					<span v-if="scope.row.AmazonProductPrice!=0">{{scope.row.AmazonProductPrice}}</span>
+				</template>
+			</el-table-column>
 			<el-table-column prop="BuyTime" label="购买时间" align="center" width="90"></el-table-column>
 			<el-table-column prop="PayAccount" label="返款账号" align="center"></el-table-column>
 			<el-table-column prop="DealTime" label="返款时间" align="center" width="90"></el-table-column>
@@ -225,8 +229,9 @@
 				<div v-if="serviceType==2">
 					<el-form-item label='返款截图：' class="mt20 p-img">
 						<el-upload class="avatar-uploader" name="image" action="/api/Order/GetProductPictures"
-							:show-file-list="false" :on-success="handleAvatarSuccess" :on-error="handleError"
-							:before-upload="beforeAvatarUpload" accept="image/jpeg,image/png,image/gif,image/bmp">
+							:headers="headers" :show-file-list="false" :on-success="handleAvatarSuccess"
+							:on-error="handleError" :before-upload="beforeAvatarUpload"
+							accept="image/jpeg,image/png,image/gif,image/bmp">
 							<img v-if="imageUrl" :src="imageUrl" class="avatar">
 							<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 						</el-upload>
@@ -349,7 +354,9 @@
 						</el-col>
 						<el-col :span="8">
 							<el-form-item label='服务费：'>
-								<span v-show="viewTaskData.AmazonNumber">{{viewTaskData.OrderUnitPriceSerCharge}}</span>
+								<span
+									v-show="viewTaskData.TaskState>2&&viewTaskData.TaskState!=7&&(viewTaskData.NoComment==0 || viewTaskData.NoComment==null)">{{viewTaskData.OrderUnitPriceSerCharge}}</span>
+								<span v-show="viewTaskData.NoComment>0">{{viewTaskData.ServiceAmount}}</span>
 							</el-form-item>
 						</el-col>
 						<div v-if="viewTaskData.ServiceType==1 && viewTaskData.AmazonNumber">
@@ -496,6 +503,9 @@
 				checkBoxData: [], //选中数据
 				countryData: [], //国家数据
 				rateData: [], //汇率数据
+				headers: {
+					auth: sessionStorage.getItem('token')
+				},
 				searchForm: {
 					searchWords: '',
 					state: 0,
