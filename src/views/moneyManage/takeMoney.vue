@@ -229,7 +229,7 @@
 				}
 				noDoMoney(params).then(res => {
 					let money = Number(res.Money)
-					_this.OKbalance = _this.balance - money
+					_this.OKbalance = (_this.balance - money).toFixed(2)
 				}).catch((e) => {})
 			},
 
