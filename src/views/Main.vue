@@ -203,8 +203,8 @@
 				rateList().then((res) => {
 					_this.listLoading1 = false
 					let data = res
-					let unData = _this.unique(data, 'CountryId')
-					_this.rateData = data
+					let unData = _this.unique(data, 'CurrencyName')
+					_this.rateData = unData
 				}).catch(err => {})
 			},
 
