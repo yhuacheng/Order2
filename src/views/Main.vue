@@ -2,53 +2,61 @@
 	<section class="main-box">
 		<el-card>
 			<div class="card-box">
-				<el-row class="card-box">
+				<el-row>
 					<el-col :span="3" :xs="12">
-						<el-card shadow="hover" class="item">
+						<el-card shadow="hover" class="item item1" :class="{'active':isActive==1}"
+							@mouseenter.native="isActive=1" @mouseleave.native="isActive=null">
 							<p>总任务</p>
 							<div class="num primary">{{all}}</div>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
-						<el-card shadow="hover" class="item">
+						<el-card shadow="hover" class="item item2" :class="{'active':isActive==2}"
+							@mouseenter.native="isActive=2" @mouseleave.native="isActive=null">
 							<p>进行中</p>
 							<div class="num warning">{{doing}}</div>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
-						<el-card shadow="hover" class="item">
+						<el-card shadow="hover" class="item item3" :class="{'active':isActive==3}"
+							@mouseenter.native="isActive=3" @mouseleave.native="isActive=null">
 							<p>已完成</p>
 							<div class="num success">{{complete}}</div>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
-						<el-card shadow="hover" class="item">
+						<el-card shadow="hover" class="item item4" :class="{'active':isActive==4}"
+							@mouseenter.native="isActive=4" @mouseleave.native="isActive=null">
 							<p>已取消</p>
 							<div class="num danger">{{cancel}}</div>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
-						<el-card shadow="hover" class="item">
+						<el-card shadow="hover" class="item item5" :class="{'active':isActive==5}"
+							@mouseenter.native="isActive=5" @mouseleave.native="isActive=null">
 							<p>余额</p>
 							<div class="num success">{{balance}}</div>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
-						<el-card shadow="hover" class="item">
-							<el-button class="btn" plain type="primary" size="mini" @click="$router.push('/order')">下单
-							</el-button>
+						<el-card shadow="hover" class="item item6" :class="{'active':isActive==6}"
+							@mouseenter.native="isActive=6" @mouseleave.native="isActive=null"
+							@click.native="$router.push('/order')">
+							<h3 class="primary">下单</h3>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
-						<el-card shadow="hover" class="item">
-							<el-button class="btn" plain type="success" size="mini" @click="addMoneyModal=true">
-								充值</el-button>
+						<el-card shadow="hover" class="item item7" :class="{'active':isActive==7}"
+							@mouseenter.native="isActive=7" @mouseleave.native="isActive=null"
+							@click.native="addMoneyModal=true">
+							<h3 class="success">充值</h3>
 						</el-card>
 					</el-col>
 					<el-col :md="3" :xs="12">
-						<el-card shadow="hover" class="item">
-							<el-button class="btn" plain type="warning" size="mini"
-								@click="$router.push('/moneyDetails')">账单</el-button>
+						<el-card shadow="hover" class="item item8" :class="{'active':isActive==8}"
+							@mouseenter.native="isActive=8" @mouseleave.native="isActive=null"
+							@click.native="$router.push('/moneyDetails')">
+							<h3 class="warning">账单</h3>
 						</el-card>
 					</el-col>
 				</el-row>
@@ -136,6 +144,7 @@
 		name: 'Main',
 		data() {
 			return {
+				isActive: null,
 				all: 0,
 				doing: 0,
 				complete: 0,
