@@ -93,7 +93,7 @@
 					</el-link>
 					<div>
 						<span v-if="scope.row.NoComment">
-							<span class="danger fz10"> {{scope.row.ServiceName}}</span>
+							<span class="danger fz12"> {{scope.row.ServiceName}}</span>
 						</span>
 					</div>
 				</template>
