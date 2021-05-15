@@ -899,8 +899,10 @@
 				_this.orderForm.ProductKeyword = row.ProductKeyWord
 				_this.orderForm.ProductPosition = row.ProductPosition
 				_this.orderForm.Number = row.Number
-				_this.orderForm.StartTime = row.StartTime
-				_this.orderForm.EndTime = row.EndTime
+				let startTime = row.StartTime ? row.StartTime.split(' ')[0].replace(/\//g, '-') : ''
+				let endTime = row.EndTime ? row.EndTime.split(' ')[0].replace(/\//g, '-') : ''
+				_this.orderForm.StartTime = startTime
+				_this.orderForm.EndTime = endTime
 				_this.orderForm.Remarks = row.Remarks
 				_this.imageUrl = row.ProductPictures
 				_this.getRateSymbol() //汇率货币符号
